@@ -1,0 +1,15 @@
+http://www.devshed.com/c/a/python/windows-programming-in-python/
+http://docs.activestate.com/activepython/3.3/pywin32/html/com/win32com/HTML/QuickStartClientCom.html
+https://bytes.com/topic/python/answers/595771-win32com-client
+
+#
+#
+##  BO
+#
+#
+http://www.forumtopics.com/busobj/viewtopic.php?p=839063&sid=db3833dbc3999c3608734a9e5e7a0d33
+http://www.forumtopics.com/busobj/viewtopic.php?p=578584&sid=bcff1b35d3959d5e7384e095992a9a99
+http://www.filipleys.net/VBA/BusinessObjects%20SDK%20Reference%20Guide.pdf
+http://bukhantsov.org/2011/08/getting-started-with-businessobjects-java-sdk/
+http://stephane-sarrazain.developpez.com/tutoriel/sdk-boxi-designer/
+https://busintblog.wordpress.com/2014/06/27/discover-business-objects-xi-with-java-sdk/

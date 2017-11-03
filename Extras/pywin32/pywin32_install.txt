@@ -1,0 +1,18 @@
+ Répertoire de D:\myTools\Python\Extras
+
+22/02/2017  14:08         8 976 225 pypiwin32-220-cp36-none-win_amd64.whl
+22/02/2017  14:33         9 070 838 pywin32-220.1-cp36-cp36m-win_amd64.whl
+               2 fichier(s)       18 047 063 octets
+               0 Rép(s)  74 789 003 264 octets libres
+
+D:\myTools\Python\Extras>pip install pywin32-220.1-cp36-cp36m-win_amd64.whl
+Processing d:\mytools\python\extras\pywin32-220.1-cp36-cp36m-win_amd64.whl
+Installing collected packages: pywin32
+Successfully installed pywin32-220.1
+
+D:\myTools\Python\Extras>pip install pypiwin32-220-cp36-none-win_amd64.whl
+Processing d:\mytools\python\extras\pypiwin32-220-cp36-none-win_amd64.whl
+Installing collected packages: pypiwin32
+Successfully installed pypiwin32-220
+
+D:\myTools\Python\Extras>
