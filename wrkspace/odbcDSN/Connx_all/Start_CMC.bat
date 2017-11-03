@@ -1,0 +1,1 @@
+cscript start_CMC.vbs swzxrabobj01.yres.ytech ET01354 MARIE44 Enterprise

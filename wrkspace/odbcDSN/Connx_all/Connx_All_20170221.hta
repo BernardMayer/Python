@@ -1,0 +1,1707 @@
+ <html>
+
+ <title>Interface de connexion Decisionnel</title>
+ <head>
+<HTA:APPLICATION
+    APPLICATIONNAME="Connx_All"
+    ID="objPath"
+    SCROLL="no"
+    SINGLEINSTANCE="yes"
+    WINDOWSTATE="normal"
+	border="dialog"
+    borderstyle="normal"
+    caption="yes"
+    contextmenu="yes"
+    maximizebutton="yes"
+	minimizebutton="yes"
+	navigable="yes"
+    selection="yes"
+    showintaskbar="yes"
+    sysmenu="yes"
+    version="1.0"
+ >
+ </head>
+
+ <style>
+
+ BODY
+ {
+         background-color: buttonface;
+           Font: arial,sans-serif
+         margin-top: 1px;`
+         margin-left: 1px;
+         margin-right: 1px;
+         margin-bottom: 1px;
+ }
+  .button
+  {
+
+         width: 120px;
+         height: 25px;
+         font-family: arial,sans-serif;
+         font-size: 8pt;
+  }
+
+  td
+  {
+         font-family: arial,sans-serif;
+         font-size: 10pt;
+
+  }
+  #scroll
+  {
+      height:100%;
+      overflow:auto;
+  }
+
+ div {
+ 	text-align:left;
+ 	}
+ div#bandeau {
+ 	width:900px;
+ 	height:70px;
+    background-image:url(img/mw0tub2iad1rvn6njo3_500.gif);
+ 	background-color:#CCCC00;
+ 	}
+
+ div#menu {
+ 	float:left;
+ 	width:250px;
+ 	height:400px;
+ 	background-color:#D6EB99;
+ 	text-align:left
+ 	}
+#divcontenu {overflow: auto; padding: 15px;}
+#divcontenu section {
+    display: block;
+    float: left;
+    width: 650px;
+    height:400px;
+ 	background-color:#99FFCC;
+}
+
+</style>
+<script language="VBScript">
+'
+' QUI QUAND      QUOI
+' === ========== =============================================================
+' PR  13/05/2013 Ecriture de ce script
+' PR  24/04/2014 Modifcation du nom des fichiers intranet et extranet genere
+' PR  30/04/2014 Demarrage de Infoview via LogonToken
+' PR  28/05/2015 Recuperation du repertoire global a partir du Drive ou se
+'                trouve l application
+' PR  29/05/2015 Recherche du path d installation du produit BO
+' PR  08/02/2016 Modification pour support IE11
+'
+' variables globales : acces au systeme et a l'environnement d'execution
+'
+Public oShell      'objet pour l'acces aux commandes Shell
+Public oVarEnv     'objet pour l'acces aux variables d'environnement system
+Public Fso         'objet pour l'acces au file system
+Public g_strScriptNameNoExt, Fichier_log_obj
+Public Nom_fichier_CR, Nom_fichier_PWD, ID_CR
+Public Dict_CR, Dict_PWD
+Public Rep_locdata, Rep_reports
+Public IE
+Public Rep_BO
+Public Trusted_connection,Driver,Language,Quotedid,ODBC_MIPS, ODBC_AUDIT, BDD_MIPS, BDD_Audit, SQL_MIPS
+
+'variables globales : fichiers manipules
+
+Dim sRepLog     'repertoire des fichiesr de logs
+Dim sFlagFile   'chemin du fichier flag
+Dim sLogFile    'chemin du fichier log
+Dim sLogType    'nom temporaire du fichier obtenu par type
+Dim sEventFile  'chemin du fichier d'evenements destines au moteur
+Dim sCmd        'commande a executer en utilisant runAs
+Dim sHTML       'chaine a afficher dans la zone d'affichage du log (balise 'code')
+Dim bGoOn       'vrai tant qu'il faut continuer a rafraichir l'affichage
+
+' initialisation des objets systeme
+
+set oShell  = createObject("wscript.Shell")
+set oVarEnv = oShell.Environment("SYSTEM")
+set Fso    = CreateObject("Scripting.FileSystemObject")
+
+Sub Window_OnLoad
+
+window.resizeTo 915,545
+
+Set oWshShell     = CreateObject("WScript.Shell")
+
+' Lecture des variable globales
+
+Create_variables_globales()
+'
+'  Création du fichier de Log
+'
+Create_log_file()
+
+
+Lecture_fichier_CR(Nom_fichier_CR)
+
+Lecture_fichier_PWD(Nom_fichier_PWD)
+
+call  WriteLogFile(0," ")
+call  WriteLogFile(0,"Debut du script  "&g_strScriptNameNoExt)
+call  WriteLogFile(0,"  ")
+
+End Sub
+
+' //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+' | Lecture_fichier_CR
+' |
+' | Lecture du fichier des CR
+' /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Sub Lecture_fichier_CR(Nom_fichier)
+Dim Fichier_ini, Fichier_ReadAll
+Dim Ligne, Mot
+Dim Ligne_a_executer,  No_univers_lie, Nb_univers_lie, No_univers, Ligne_part2
+Dim CR_trouve
+Dim Temp_cr
+Dim Dict_trouve
+
+Const FOR_READING = 1
+
+Set Dict_CR          = CreateObject("Scripting.Dictionary")
+
+' Set Filesys = CreateObject("Scripting.FileSystemObject")
+'
+' Verification de l'existence du fichier ini
+'
+If  Not FSO.FileExists(Nom_fichier) Then
+    call WriteLogFile(1,"  ")
+    call WriteLogFile(1,"Le fichier de parametrage '"&Nom_fichier&"' n'est pas trouve")
+    call WriteLogFile(1,"  ")
+    call WriteLogFile(1,"Arret immediat du script ")
+    call WriteLogFile(1,"  ")
+ 	MsgBox("Le fichier de parametrage '"&Nom_fichier&"' n'est pas trouve" & chr(13) & "Arret immediat du script " )
+	window.close
+End If
+Set Fichier_ini = FSO.OpenTextFile(Nom_fichier, FOR_READING)
+call  WriteLogFile(3," ")
+call  WriteLogFile(3,"Debut variables CR")
+call  WriteLogFile(3," ")
+call  WriteLogFile(3,"Lecture du fichier ini CR : "&Nom_fichier)
+call  WriteLogFile(3," ")
+
+Dict_trouve     = False
+CR_trouve       = False
+
+Do While Not Fichier_ini.AtEndOfStream
+    Ligne = Fichier_ini.ReadLine()
+
+'    wscript.echo "Ligne = " & Ligne
+    If Left(Ligne,1) <> "'" Then
+		If left(Ligne,1) = "[" Then
+				Ligne = Replace(Ligne,"[","")
+				Ligne = Replace(Ligne,"]","")
+
+				If Ucase(Left(Trim(Ligne),3)) = "FIN"  Then
+					If  CR_trouve = True Then
+						CR_trouve = False
+					Else
+						if Dict_trouve = True Then
+							Dict_trouve = False
+						End If
+					End if
+				Else
+					If UCase(Left(trim(Ligne),6)) = "CR_CAT" Then
+					   CR_trouve   = True
+					   Dict_trouve = False
+					Else
+					   call  WriteLogFile(0,"Dictionnaire '"&Ligne&"' inconnu" )
+					   call  WriteLogFile(0," ")
+					   Dict_trouve = True
+					End if
+				End if
+		Else
+				If  Len(Trim(Ligne)) > 0 Then
+					If  CR_trouve = True Then
+							   Temp_cr = Split(Ligne,"=")
+							   Ligne = replace(Ligne, "=", ";")
+							   Dict_CR.add Trim(Ucase(Temp_cr(0))),Ligne
+							   call WriteLogFile(3,"Dict_CR.add "&Trim(Ucase(Temp_cr(0)))&","&Ligne)
+					Else
+						If Dict_trouve = False Then
+							  ExecuteGlobal Ligne
+'							  call  WriteLogFile(0,Ligne )
+						End if
+					End if
+				End if
+		End if
+
+    End If
+
+Loop
+
+call  WriteLogFile(3," ")
+call  WriteLogFile(3,"Fin variables CR")
+call  WriteLogFile(3," ")
+
+Fichier_ini.Close
+Set Fichier_ini = Nothing
+End Sub
+
+' //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+' | Lecture_fichier_PWD
+' |
+' | Lecture du fichier des Passwords
+' /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Sub Lecture_Fichier_PWD(Nom_fichier)
+Dim Traitement_trouve
+' Dim Filesys
+Dim Fichier_ini, Fichier_ReadAll
+Dim Ligne, Mot
+Dim Temp_PWD
+
+Const FOR_READING = 1
+
+Set Dict_PWD          = CreateObject("Scripting.Dictionary")
+
+' Set Filesys = CreateObject("Scripting.FileSystemObject")
+'
+' Verification de l'existence du fichier ini
+'
+If  Not FSO.FileExists(Nom_fichier) Then
+    call WriteLogFile(1,"  ")
+    call WriteLogFile(1,"Le fichier de parametrage '"&Nom_fichier&"' n'est pas trouve")
+    call WriteLogFile(1,"  ")
+    call WriteLogFile(1,"Arret immediat du script ")
+    call WriteLogFile(1,"  ")
+ 	MsgBox("Le fichier de parametrage '"&Nom_fichier&"' n'est pas trouve" & chr(13) & "Arret immediat du script " )
+	window.close
+End If
+Set Fichier_ini = FSO.OpenTextFile(Nom_fichier, FOR_READING)
+call  WriteLogFile(3," ")
+call  WriteLogFile(3,"Debut variables CR")
+call  WriteLogFile(3," ")
+call  WriteLogFile(3,"Lecture du fichier ini CR : "&Nom_fichier)
+call  WriteLogFile(3," ")
+
+Dict_trouve     = False
+CR_trouve       = False
+
+Do While Not Fichier_ini.AtEndOfStream
+    Ligne = Fichier_ini.ReadLine()
+
+'    wscript.echo "Ligne = " & Ligne
+    If Left(Ligne,1) <> "'" Then
+
+		If  Len(Trim(Ligne)) > 0 Then
+		   Temp_PWD = Split(Ligne,";")
+		   Dict_PWD.add Trim(Ucase(Temp_PWD(0))),Ligne
+		   call WriteLogFile(3,"Dict_PWD.add "&Trim(Ucase(Temp_PWD(0)))&","&Ligne)
+		End if
+
+    End If
+
+Loop
+
+call  WriteLogFile(3," ")
+call  WriteLogFile(3,"Fin variables CR")
+call  WriteLogFile(3," ")
+
+Fichier_ini.Close
+Set Fichier_ini = Nothing
+End Sub
+
+
+Sub RunScript()
+'
+' DATE       : 21/05/2013
+' Description    : Script principal
+'
+'-----------------------------------------------------------------------------
+' Recuperation des radio boutons positionnes
+'-----------------------------------------------------------------------------
+document.getElementById("proceedImg").src="img/Proceed.png"
+'
+' Recherche de l'emplacement de l installation de BO
+'
+Rep_BO =  "C:\LOGICIELS\Business Objects\BusinessObjects Enterprise 12.0\win32_x86"
+If not FSO.FolderExists(Rep_BO) Then
+    rep_BO = "C:\Program Files (x86)\Business Objects\BusinessObjects Enterprise 12.0\win32_x86"
+	If not FSO.FolderExists(Rep_BO) Then
+		MsgBox("Le path d'installation du produit BO n'a pas ete trouve" & chr(13) )
+	End if
+End If
+
+call  WriteLogFile(0,"Rep_BO = " & Rep_BO )
+'
+Nom_VBS = ""
+ID_CR = ""
+Test_CR = True
+
+For Each objButton in Exec_02
+        If objButton.Checked Then
+			Nom_vbs = Ucase(objButton.Value)
+			call  WriteLogFile(0,"Nom_vbs = " & Nom_vbs )
+        End If
+Next
+
+For Each objButton in Groupe_01
+        If objButton.Checked Then
+			Id_CR = objButton.Value
+        End If
+Next
+
+If Nom_Vbs = "" then
+		MsgBox("Vous devez selectionner une action a executer" & chr(13) )
+		document.getElementById("proceedImg").src="img/proceed-active.png"
+		Exit Sub
+end if
+
+If Nom_VBS = "REMEDY" Then
+	Test_CR = False
+end if
+
+If Test_CR then
+	call  WriteLogFile(0,"CR selectionnee : " & ID_CR )
+
+	If ID_CR = "" then
+		MsgBox("Vous devez selectionner une CR" & chr(13) )
+		document.getElementById("proceedImg").src="img/proceed-active.png"
+		Exit Sub
+
+	end if
+	If not Dict_CR.exists(Ucase(Id_CR)) then
+		call WriteLogFile(1,"La CR " & ID_CR & "n'est pas connu dans le fichier CR.ini")
+		call WriteLogFile(1,"Arret immediat du script")
+		MsgBox("La CR '" & ID_CR & "' n'est pas connue dans le fichier 'CR.ini'" & chr(13) )
+		document.getElementById("proceedImg").src="img/proceed-active.png"
+		Exit Sub
+
+	End If
+
+	call  WriteLogFile(0,"Dict_CR selectionnee = " & Dict_CR(Ucase(Id_CR)) )
+
+	Array_CR = Split(Dict_CR(Ucase(Id_CR)),";")
+
+	Titre_VM   = Trim(Array_CR(1))
+	VM_BO      = Trim(Array_CR(2))
+	Domaine_BO = Trim(Array_CR(3))
+	Acces_BO   = Trim(Array_CR(4))
+	SQL_MIPS   = Trim(Array_CR(5))
+	VM_MIPS    = replace(SQL_MIPS,"/","\")
+
+	If instr(VM_MIPS,"\") > 0 then
+		VM_MIPS = Mid(VM_MIPS,1,instr(VM_MIPS,"\")-1)
+	End if
+'
+' Information pour la creation de la connexion ODBC
+'
+	Trusted_connection  = Trim(Ucase(Array_CR(6)))
+	Driver              = Trim(Array_CR(7))
+	If Driver  = "SQL" then
+	
+'	"C:\Program Files (x86)\Microsoft SQL Server\100\Tools\Binn\VSShell\Common7\IDE\Ssms.exe"
+		Exec_sql = "C:\Program Files (x86)\Microsoft SQL Server\100\Tools\Binn\VSShell\Common7\IDE\Ssms.exe"
+	Else
+		Exec_sql = "C:\Program Files (x86)\Microsoft SQL Server\100\Tools\Binn\VSShell\Common7\IDE\Ssms.exe"
+		Driver  = "SQL"
+	End if
+
+	Language            = Trim(Array_CR(8))
+	Quotedid            = Trim(Array_CR(9))
+	Acces_SQL           = Trim(Array_CR(10))
+	ODBC_MIPS           = Trim(Array_CR(11))
+	BDD_MIPS            = Trim(Array_CR(12))
+	Adabo = mid(BDD_MIPS,2,5)
+
+	ODBC_AUDIT          = Trim(Array_CR(13))
+	BDD_AUDIT           = Trim(Array_CR(14))
+	VM_NEO              = Trim(Array_CR(15))
+	Acces_SRV           = Trim(Array_CR(16))
+
+	call  WriteLogFile(0," ")
+	call  WriteLogFile(0,"Titre_VM   = " & Titre_VM )
+	call  WriteLogFile(0,"Adabo    = " & Adabo )
+
+	call  WriteLogFile(0,"VM_BO      = " & VM_BO)
+	call  WriteLogFile(0,"Domaine_BO = " & Domaine_BO)
+	call  WriteLogFile(0,"Acces_BO   = " & Acces_BO)
+
+	call  WriteLogFile(0,"VM_MIPS            = " & VM_MIPS)
+	call  WriteLogFile(0,"SQL_MIPS           = " & SQL_MIPS)
+	call  WriteLogFile(0,"Trusted_connection = " & Trusted_connection)
+	call  WriteLogFile(0,"Driver             = " & Driver)
+	call  WriteLogFile(0,"Version_sql          = " & Version_sql)
+
+	call  WriteLogFile(0,"Language           = " & Language)
+	call  WriteLogFile(0,"Quotedid           = " & Quotedid)
+	call  WriteLogFile(0,"Acces_SQL          = " & Acces_SQL )
+
+	call  WriteLogFile(0,"ODBC_MIPS  = " & ODBC_MIPS)
+	call  WriteLogFile(0,"BDD_MIPS   = " & BDD_MIPS)
+	call  WriteLogFile(0,"ODBC_AUDIT = " & ODBC_AUDIT)
+
+	call  WriteLogFile(0,"BDD_AUDIT  = " & BDD_AUDIT)
+	call  WriteLogFile(0,"VM_NEO     = " & VM_NEO)
+	call  WriteLogFile(0,"Acces_SRV    = " & Acces_SRV)
+	call  WriteLogFile(0," ")
+
+	If not Dict_PWD.exists(Ucase(Acces_SRV)) then
+		call WriteLogFile(1,"La cle " & Acces_SRV_CR & "n'est pas connu dans le fichier PWD.ini")
+		call WriteLogFile(1,"Arret immediat du script")
+		MsgBox("La cle " & Acces_SRV & "n'est pas connu dans le fichier PWD.ini" & chr(13) )
+		document.getElementById("proceedImg").src="img/proceed-active.png"
+		Exit Sub
+	End If
+
+	Array_PWD = Split(Dict_PWD(Ucase(Acces_SRV)),";")
+
+	Domaine_PWD = Trim(Array_PWD(1))
+	Domaine_PWD = Replace(Domaine_PWD,"<ID_CR>", Adabo)
+
+	User_PWD = Trim(Array_PWD(2))
+	Pwd_PWD = Trim(Array_PWD(3))
+
+	call  WriteLogFile(0,"Domaine_PWD  = " & Domaine_PWD)
+	call  WriteLogFile(0,"User_PWD     = " & User_PWD)
+	call  WriteLogFile(0,"Pwd_PWD      = " & Pwd_PWD)
+	call  WriteLogFile(0," ")
+
+'	VM_BO = VM_BO
+	If Domaine_BO <> "" then
+		VM_BO = VM_BO & "." & Domaine_BO
+	End if
+	Serveur_BO =  VM_BO
+
+End if
+
+sCMD = ""
+
+Select case Nom_vbs
+   	case "CONNX_SRVBO"
+		Array_PWD = Split(Dict_PWD(Ucase(Acces_SRV)),";")
+
+		Domaine_PWD = Trim(Array_PWD(1))
+		User_PWD    = Trim(Array_PWD(2))
+		Pwd_PWD     = Trim(Array_PWD(3))
+
+		call  WriteLogFile(0,"Domaine_PWD  = " & Domaine_PWD)
+		call  WriteLogFile(0,"User_PWD     = " & User_PWD)
+		call  WriteLogFile(0,"Pwd_PWD      = " & Pwd_PWD)
+		call  WriteLogFile(0," ")
+		If Acces_SRV = "NICE_AD"  OR Acces_SRV  = "NICE_DEV" then
+			sCmd        = "rdp.exe /v:" & VM_BO & " /admin  /u:" & User_PWD & " /p:" & Pwd_PWD & " /domain:" & Domaine_PWD & " /drives:fixed,-u: /max /title:" & chr(34) & "BO - "& Titre_VM & chr(34)
+'			sCmd        = "rdp.exe /v:" & VM_BO & " /u:" & User_PWD & " /p:" & Pwd_PWD & " /domain:" & Domaine_PWD & " /drives:fixed,-u: /max /title:" & chr(34) & "BO - "& Titre_VM & chr(34)
+
+		Else
+			call WriteLogFile(1,"Acces a la VM SQL Server de '" & ID_CR  & "' non autorisee ")
+			call WriteLogFile(1,"Arret immediat du script")
+		end if
+   	case "CONNX_SRVNEO"
+		Array_PWD = Split(Dict_PWD(Ucase(Acces_SRV)),";")
+
+		Domaine_PWD = Trim(Array_PWD(1))
+		User_PWD    = Trim(Array_PWD(2))
+		Pwd_PWD     = Trim(Array_PWD(3))
+
+		call  WriteLogFile(0,"Domaine_PWD  = " & Domaine_PWD)
+		call  WriteLogFile(0,"User_PWD     = " & User_PWD)
+		call  WriteLogFile(0,"Pwd_PWD      = " & Pwd_PWD)
+		call  WriteLogFile(0," ")
+
+		If Acces_SRV = "NICE_AD" then
+			sCmd        = "rdp.exe /v:" & VM_NEO & " /u:" & User_PWD & " /p:" & Pwd_PWD & " /domain:" & Domaine_PWD & " /drives:fixed,-u: /max /title:" & chr(34) & "NEOBATCH - " & Titre_VM & chr(34)
+		End if
+	Case "CONNX_SRVSQL"
+		Array_PWD = Split(Dict_PWD(Ucase(Acces_SRV)),";")
+
+		Domaine_PWD = Trim(Array_PWD(1))
+		User_PWD    = Trim(Array_PWD(2))
+		Pwd_PWD     = Trim(Array_PWD(3))
+
+		call  WriteLogFile(0,"Domaine_PWD  = " & Domaine_PWD)
+		call  WriteLogFile(0,"User_PWD     = " & User_PWD)
+		call  WriteLogFile(0,"Pwd_PWD      = " & Pwd_PWD)
+		call  WriteLogFile(0," ")
+
+		If Acces_SRV =  "NICE_AD" OR Acces_SRV  = "NICE_DEV" then
+			sCmd        = "rdp.exe /v:" & VM_MIPS & " /u:" & User_PWD & " /p:" & Pwd_PWD & " /domain:" & Domaine_PWD & " /drives:fixed,-u: /max /title:" & chr(34) & "SGBD - " & Titre_VM & chr(34)
+		Else
+			call WriteLogFile(1,"Acces a la VM SQL Server de '" & ID_CR  & "' non autorisee ")
+			call WriteLogFile(1,"Arret immediat du script")
+			window.close
+		End if
+   	case "CONNX_SQLMIPS"
+		Array_PWD = Split(Dict_PWD(Ucase(Acces_SQL)),";")
+
+		Domaine_PWD = Trim(Array_PWD(1))
+		User_PWD    = Trim(Array_PWD(2))
+		Pwd_PWD     = Trim(Array_PWD(3))
+
+		call  WriteLogFile(0,"Acces_SQL = " & Acces_SQL)
+		call  WriteLogFile(0,"Domaine_PWD  = " & Domaine_PWD)
+		call  WriteLogFile(0,"User_PWD     = " & User_PWD)
+		call  WriteLogFile(0,"Pwd_PWD      = " & Pwd_PWD)
+		call  WriteLogFile(0," ")
+
+		If Acces_SQL =  "SQL_AD" then
+			sCmd        = "cscript xrunas.vbs /user:" & Domaine_PWD & "\" & User_PWD & " /netonly /pwd:" & Pwd_PWD & " " & """" & Exec_sql & """" &  "  -s " & SQL_MIPS & " -d " & BDD_MIPS & " -E -nosplash"""
+
+		Else
+			User_PWD  = Replace(User_PWD ,"<ID_CR>", Adabo)
+			sCmd        = """" & Exec_sql & """" & " -s " & SQL_MIPS & " -d " & BDD_MIPS & " -U " & User_PWD & " -P " & Pwd_PWD & " -nosplash"
+
+		End if
+   	case "CONNX_SQLAUDIT"
+		Array_PWD = Split(Dict_PWD(Ucase(Acces_SQL)),";")
+
+		Domaine_PWD = Trim(Array_PWD(1))
+		User_PWD    = Trim(Array_PWD(2))
+		Pwd_PWD     = Trim(Array_PWD(3))
+
+		call  WriteLogFile(0,"Domaine_PWD  = " & Domaine_PWD)
+		call  WriteLogFile(0,"User_PWD     = " & User_PWD)
+		call  WriteLogFile(0,"Pwd_PWD      = " & Pwd_PWD)
+		call  WriteLogFile(0," ")
+
+		If Acces_SQL =  "SQL_AD" then
+			sCmd        = "cscript xrunas.vbs /user:" & Domaine_PWD & "\" & User_PWD & " /netonly /pwd:" & Pwd_PWD & " " & """" & Exec_sql & """" & " -s " & SQL_MIPS & " -d " & BDD_AUDIT & " -E -nosplash"""
+		Else
+			User_PWD  = Replace(User_PWD ,"<ID_CR>", Adabo)
+			sCmd        = """" & Exec_sql & """" & " -s " & SQL_MIPS & " -d " & BDD_MIPS & " -U " & User_PWD & " -P " & Pwd_PWD & " -nosplash"
+
+		End if
+	Case "CONNX_DESKI2"
+		If Acces_BO =  "BO_ENT" then
+			If not Dict_PWD.exists(Ucase(Acces_BO)) then
+				call WriteLogFile(1,"La cle " & Acces_BO & "n'est pas connu dans le fichier PWD.ini")
+				call WriteLogFile(1,"Arret immediat du script")
+				MsgBox("La cle " & Acces_BO & "n'est pas connu dans le fichier PWD.ini" & chr(13) )
+				document.getElementById("proceedImg").src="img/proceed-active.png"
+				Exit Sub
+			End If
+			Array_PWD = Split(Dict_PWD(Ucase(Acces_BO)),";")
+			User_BO = Trim(Array_PWD(2))
+			Pwd_BO  = Trim(Array_PWD(3))
+			call  WriteLogFile(0,"User_BO = " & User_BO)
+			call  WriteLogFile(0,"Pwd_BO = " & Pwd_BO)
+
+			Modif_MIPS_ODBC()
+			Modif_AUDIT_ODBC()
+'			Modif_ReceiveTimeout()
+
+			Nom_locdata = Rep_locdata & "/" & Replace(VM_BO,".","_") & ".intranet"
+			call WriteLogFile(0,"Nom_locdata =  '" & Nom_locdata & "'")
+
+			if not FSO.Fileexists(Nom_locdata) then
+				Set objFile = FSO.CreateTextFile(Nom_locdata)
+				'
+				' Creation du fichier locdata mode 2-Tier
+				'
+				objFile.WriteLine("connection.common.config_name=" & VM_BO)
+				objFile.WriteLine("connection.common.last_authmode=secEnterprise")
+				objFile.WriteLine("connection.common.last_user=ET01354")
+				objFile.WriteLine("connection.common.mode=INPROC_CLIENT_MODE")
+				objFile.Close
+
+			End if
+			'
+			' Forcer la connexion comme Administrator
+			'
+			'User_BO = "Administrator"
+			'Pwd_BO = "BO-C@T_2011"
+			sCmd =  chr(34) & Rep_BO & "\busobj.exe" & chr(34) & " -system " &  Serveur_BO & " -User " & User_BO & " -Pass " & Pwd_BO & " -auth ""Enterprise"""
+		Else
+			call WriteLogFile(1,"Type d'acces a BO non supporte")
+			call WriteLogFile(1,"Arret immediat du script")
+			window.close
+
+		End if
+	Case "CONNX_WEBIRICH"
+		If Acces_BO =  "BO_ENT" then
+			If not Dict_PWD.exists(Ucase(Acces_BO)) then
+				call WriteLogFile(1,"La cle " & Acces_BO & "n'est pas connu dans le fichier PWD.ini")
+				call WriteLogFile(1,"Arret immediat du script")
+				MsgBox("La cle " & Acces_BO & "n'est pas connu dans le fichier PWD.ini" & chr(13) )
+				document.getElementById("proceedImg").src="img/proceed-active.png"
+				Exit Sub
+			End If
+			Array_PWD = Split(Dict_PWD(Ucase(Acces_BO)),";")
+			User_BO = Trim(Array_PWD(2))
+			Pwd_BO  = Trim(Array_PWD(3))
+			call  WriteLogFile(0,"User_BO = " & User_BO)
+			call  WriteLogFile(0,"Pwd_BO = " & Pwd_BO)
+
+			Modif_MIPS_ODBC()
+			Modif_AUDIT_ODBC()
+'			Modif_ReceiveTimeout()
+
+			Nom_locdata = Rep_locdata & "/" & Replace(VM_BO,".","_") & ".intranet"
+			call WriteLogFile(0,"Nom_locdata =  '" & Nom_locdata & "'")
+
+			if not FSO.Fileexists(Nom_locdata) then
+				Set objFile = FSO.CreateTextFile(Nom_locdata)
+				'
+				' Creation du fichier locdata mode 2-Tier
+				'
+				objFile.WriteLine("connection.common.config_name=" & VM_BO)
+				objFile.WriteLine("connection.common.last_authmode=secEnterprise")
+				objFile.WriteLine("connection.common.last_user=ET01354")
+				objFile.WriteLine("connection.common.mode=INPROC_CLIENT_MODE")
+				objFile.Close
+
+			End if
+			
+			User_BO = "Administrator"
+			Pwd_BO = "BO-C@T_2011"
+			sCmd =  chr(34)  & Rep_BO & "\WebIRichClient.exe" & chr(34)  & " -system " &  Serveur_BO & " -user " & User_BO & " -pass " & Pwd_BO & " -auth Enterprise -nologo"
+		Else
+			call WriteLogFile(1,"Type d'acces a BO non supporte")
+			call WriteLogFile(1,"Arret immediat du script")
+			window.close
+
+		End if
+	Case "CONNX_DESKI3"
+		If Acces_BO =  "BO_ENT" then
+			If not Dict_PWD.exists(Ucase(Acces_BO)) then
+				call WriteLogFile(1,"La cle " & Acces_BO & "n'est pas connu dans le fichier PWD.ini")
+				call WriteLogFile(1,"Arret immediat du script")
+				MsgBox("La cle " & Acces_BO & "n'est pas connu dans le fichier PWD.ini" & chr(13) )
+				document.getElementById("proceedImg").src="img/proceed-active.png"
+				Exit Sub
+			End If
+			Array_PWD = Split(Dict_PWD(Ucase(Acces_BO)),";")
+			User_BO = Trim(Array_PWD(2))
+			Pwd_BO  = Trim(Array_PWD(3))
+			call  WriteLogFile(0,"User_BO = " & User_BO)
+			call  WriteLogFile(0,"Pwd_BO = " & Pwd_BO)
+
+			Nom_locdata = Rep_locdata & "/" & Replace(VM_BO,".","_") & "@6400_j2ee.extranet"
+			call WriteLogFile(0,"Nom_locdata =  '" & Nom_locdata & "'")
+			if not FSO.Fileexists(Nom_locdata) then
+				'
+				' Creation du fichier locdata mode 3-Tier
+				'
+				Set objFile = FSO.CreateTextFile(Nom_locdata)
+				objFile.WriteLine("connection.common.config_name=" & VM_BO & ":6400")
+				objFile.WriteLine("connection.common.last_authmode=secEnterprise")
+				objFile.WriteLine("connection.common.last_user=ET01354")
+				objFile.WriteLine("connection.common.mode=HTTP_MODE")
+				objFile.WriteLine("connection.http.locale=fr")
+				objFile.WriteLine("connection.http.provider=WSTK_HTTP_Tunneling")
+				objFile.WriteLine("connection.http.sso_provider=")
+				objFile.WriteLine("connection.http.url=http://" & VM_BO & "//AnalyticalReporting/../AnalyticalReporting/jsp/shared/WSTKBridge.jsp")
+				objFile.WriteLine("connection.http.urlbase=http://" & VM_BO & "//AnalyticalReporting/..")
+				objFile.WriteLine("connection.http.web_authmode=")
+				objFile.Close
+
+			End if
+			User_BO = "Administrator"
+			Pwd_BO = "BO-C@T_2011"
+
+			sCmd =  chr(34)  & Rep_BO & "\busobj.exe" & chr(34) & " -system " &  """" & Serveur_BO & ":6400 (J2EE Portal)"""  & " -User " & User_BO & " -Pass " & Pwd_BO & " -auth ""Enterprise"""
+		Else
+			call WriteLogFile(1,"Type d'acces a BO non supporte")
+			call WriteLogFile(1,"Arret immediat du script")
+			window.close
+
+		End if
+
+	Case "CONNX_DESIGNER"
+		If Acces_BO =  "BO_ENT" then
+
+			If not Dict_PWD.exists(Ucase(Acces_BO)) then
+				call WriteLogFile(1,"La cle " & Acces_BO & "n'est pas connu dans le fichier PWD.ini")
+				call WriteLogFile(1,"Arret immediat du script")
+				MsgBox("La cle " & Acces_BO & "n'est pas connu dans le fichier PWD.ini" & chr(13) )
+				document.getElementById("proceedImg").src="img/proceed-active.png"
+				Exit Sub
+			End If
+			Array_PWD = Split(Dict_PWD(Ucase(Acces_BO)),";")
+			User_BO = Trim(Array_PWD(2))
+			Pwd_BO  = Trim(Array_PWD(3))
+			call  WriteLogFile(0,"User_BO = " & User_BO)
+			call  WriteLogFile(0,"Pwd_BO = " & Pwd_BO)
+			'
+			' Creation du fichier locdata mode 2-Tier
+			'
+			Nom_locdata = Rep_locdata & "/" & Replace(VM_BO,".","_") & ".intranet"
+			call WriteLogFile(0,"Nom_locdata =  '" & Nom_locdata & "'")
+			if not FSO.Fileexists(Nom_locdata) then
+				Set objFile = FSO.CreateTextFile(Nom_locdata)
+				objFile.WriteLine("connection.common.config_name=" & VM_BO)
+				objFile.WriteLine("connection.common.last_authmode=secEnterprise")
+				objFile.WriteLine("connection.common.last_user=ET01354")
+				objFile.WriteLine("connection.common.mode=INPROC_CLIENT_MODE")
+				objFile.Close
+
+			End if
+
+			Modif_MIPS_ODBC()
+			Modif_AUDIT_ODBC()
+			
+			User_BO = "Administrator"
+			Pwd_BO = "BO-C@T_2011"
+			
+			sCmd =  chr(34)  & Rep_BO & "\Designer.exe" & chr(34) & " -system " &  Serveur_BO & " -User " & User_BO & " -Pass " & Pwd_BO & " -auth ""Enterprise"""
+		Else
+			call WriteLogFile(1,"Type d'acces a BO non supporte")
+			call WriteLogFile(1,"Arret immediat du script")
+			window.close
+
+		End if
+
+	case "CONNX_QBUILDER"
+		If Acces_BO =  "BO_ENT" then
+
+			If not Dict_PWD.exists(Ucase(Acces_BO)) then
+				call WriteLogFile(1,"La cle " & Acces_BO & "n'est pas connu dans le fichier PWD.ini")
+				call WriteLogFile(1,"Arret immediat du script")
+				MsgBox("La cle " & Acces_BO & "n'est pas connu dans le fichier PWD.ini" & chr(13) )
+				document.getElementById("proceedImg").src="img/proceed-active.png"
+				Exit Sub
+			End If
+			URL = "http://" & VM_BO & "/AdminTools/querybuilder/ie.jsp"
+			scmd = "Start_Qbuilder_IE.exe " & Serveur_BO & " " & Acces_BO & " " & VM_BO
+		Else
+			call WriteLogFile(1,"Type d'acces a BO non supporte")
+			call WriteLogFile(1,"Arret immediat du script")
+			window.close
+
+		End if
+
+	case "CONNX_INFOVIEW"
+		If Acces_BO =  "BO_ENT" then
+
+			If not Dict_PWD.exists(Ucase(Acces_BO)) then
+				call WriteLogFile(1,"La cle " & Acces_BO & "n'est pas connu dans le fichier PWD.ini")
+				call WriteLogFile(1,"Arret immediat du script")
+				MsgBox("La cle " & Acces_BO & "n'est pas connu dans le fichier PWD.ini" & chr(13) )
+				document.getElementById("proceedImg").src="img/proceed-active.png"
+				Exit Sub
+			End If
+
+
+			Array_PWD = Split(Dict_PWD(Ucase(Acces_BO)),";")
+			Domaine_PWD = Trim(Array_PWD(1))
+			ceUsername = Trim(Array_PWD(2))
+			cePassword  = Trim(Array_PWD(3))
+			
+			ceUsername = "Administrator"
+			cePassword = "BO-C@T_2011"
+
+			cmsName = VM_BO
+			call  WriteLogFile(0," ")
+			Call  WriteLogFile(3,"cmsName = " & cmsName  & " , ceUsername  =  " & ceUsername & ", Password " &  cePassword)
+
+			Set oSessionMgr = CreateObject("CrystalEnterprise.SessionMgr")
+
+			set oEnterpriseSession = oSessionMgr.Logon(ceUsername, cePassword, cmsName , "secEnterprise")
+			Call  WriteLogFile(3,"Apres set oEnterpriseSession ")
+
+			If Err.Number <> 0 Then
+				call  WriteLogFile(0,"Connexion au CMS " &  cmsName & "pour le user'" & ceUsername & "impossible ")
+				window.close
+
+			End If
+			validMinutes = 30
+			validNumOfLogons = 100
+			'Retrieve the LogonTokenManager
+
+			Set LogonTokenMgr = oEnterpriseSession.LogonTokenMgr
+			'
+			'Creation du logon token d acces
+			'
+			logonToken = LogonTokenMgr.CreateLogonTokenEx(clientMachineName, validMinutes, validNumOfLogons)
+			URL = "http://" & VM_BO & "/InfoViewApp/logon/start.do?ivsLogonToken=" & logonToken
+
+			Set objIE = CreateObject("InternetExplorer.Application")
+			objIE.Width = 1900
+			objIE.Height = 1000
+			objIE.Left = 0
+			objIE.Top = 0
+			objIE.Visible = 1
+			objIE.Navigate(URL)
+		Else
+			call WriteLogFile(1,"Type d'acces a BO non supporte")
+			call WriteLogFile(1,"Arret immediat du script")
+			window.close
+
+		End if
+	case "CONNX_CMC"
+		If Acces_BO =  "BO_ENT" then
+			If not Dict_PWD.exists(Ucase(Acces_BO)) then
+				call WriteLogFile(1,"La cle " & Acces_BO & "n'est pas connu dans le fichier PWD.ini")
+				call WriteLogFile(1,"Arret immediat du script")
+				MsgBox("La cle " & Acces_BO & "n'est pas connu dans le fichier PWD.ini" & chr(13) )
+				document.getElementById("proceedImg").src="img/proceed-active.png"
+				Exit Sub
+			End If
+			Array_PWD = Split(Dict_PWD(Ucase(Acces_BO)),";")
+			Domaine_PWD = Trim(Array_PWD(1))
+			ceUsername = Trim(Array_PWD(2))
+			cePassword  = Trim(Array_PWD(3))
+
+			ceUsername = "Administrator"
+			cePassword = "BO-C@T_2011"
+			
+			scmd = "cscript Start_CMC.vbs " & VM_BO & " " & ceUsername & " " & cePassword & " " &   "Enterprise"
+
+		Else
+			call WriteLogFile(1,"Type d'acces a BO non supporte")
+			call WriteLogFile(1,"Arret immediat du script")
+			window.close
+
+		End if
+
+   	case "REMEDY"
+
+		If not Dict_PWD.exists("REMEDY") then
+			call WriteLogFile(1,"La cle 'REMEDY' n'est pas connu dans le fichier PWD.ini")
+			call WriteLogFile(1,"Arret immediat du script")
+			MsgBox("La cle 'REMEDY' n'est pas connu dans le fichier PWD.ini" & chr(13) )
+			document.getElementById("proceedImg").src="img/proceed-active.png"
+			Exit Sub
+		End If
+		Array_PWD = Split(Dict_PWD("REMEDY"),";")
+		User_REMEDY = Trim(Array_PWD(2))
+		Pwd_REMEDY  = Trim(Array_PWD(3))
+		call  WriteLogFile(0,"User_REMEDY = " & User_REMEDY)
+		call  WriteLogFile(0,"Pwd_REMEDY = " & Pwd_REMEDY)
+
+		URL = "http://mup10-itsm.ca-technologies.credit-agricole.fr/arsys/shared/login.jsp?/arsys/forms/mup10-itsmsrgpars/SHR%3ALandingConsole/Default+Administrator+View/?format=html"
+
+		Set objIE = CreateObject("InternetExplorer.Application")
+		sleep(500)
+		objIE.Width = 1900
+		objIE.Height = 1000
+		objIE.Left = 0
+		objIE.Top = 0
+		objIE.Visible = True
+
+		objIE.Navigate "http://mup10-itsm.ca-technologies.credit-agricole.fr/arsys/shared/login.jsp?/arsys/forms/mup10-itsmsrgpars/SHR%3ALandingConsole/Default+Administrator+View/?format=html"
+'		call  WriteLogFile(0,"Apres Navigate")
+
+		sleep(500)
+		GetIE(URL)
+'		call  WriteLogFile(0,"Apres GetIE")
+
+		IE.document.getelementbyId("username-id").value = User_REMEDY
+		IE.document.getelementbyId("pwd-id").value = Pwd_REMEDY
+
+		set objButtons = IE.document.getElementsByTagName("input")
+
+		for each objButton in objButtons
+
+			strText = objButton.name
+
+			if (strText = "login") then
+				objButton.click
+			end if
+		next
+'		IE.document.getElementByName("login").Click
+'		IE.document.getelementbyId("login").Click
+call  WriteLogFile(0,"Apres For Each")
+	case Else
+		call WriteLogFile(1,"Le script invoque & '" & Nom_vbs & "' est inconnu")
+		MsgBox("Le script invoque & '" & Nom_vbs & "' est inconnu" & chr(13) )
+		document.getElementById("proceedImg").src="img/proceed-active.png"
+		Exit Sub
+end Select
+
+'-----------------------------------------------------------------------------
+' execution de la commande
+'-----------------------------------------------------------------------------
+If sCMD <> "" then
+	call  WriteLogFile(0,"sCMD  = " & sCMD)
+	if Nom_vbs = "CONNX_CMC" then
+		Call oShell.Run(sCmd,0,true)
+	else
+		Call oShell.Run(sCmd,3,false)
+	End if
+End if
+
+window.blur()
+
+sleep(3000)
+
+document.getElementById("proceedImg").src="img/proceed-active.png"
+
+' MyVar = MsgBox ("Fichier_log = " & Fichier_log, 65, "Message BO")
+
+end Sub
+
+'Attaches to an existing instance of IE with matching URL
+
+Sub GetIE(URL)
+	Dim objInstances, objIE
+	Set objInstances = CreateObject("Shell.Application").windows
+' call  WriteLogFile(0,"Dans GETIE")
+
+	If objInstances.Count > 0 Then
+
+		For Each objIE In objInstances
+' call  WriteLogFile(0,"Dans For")
+
+			If InStr(objIE.LocationURL,URL) > 0 then
+' call  WriteLogFile(0,"Dans If")
+
+				Set IE = objIE
+
+			End if
+		Next
+	End if
+End Sub
+
+'Navigates IE to specified URL
+Sub Navigate(URL)
+  IE.Navigate URL
+  do while IE.Busy
+  loop
+End Sub
+
+'clicks specified link
+Sub ClickLink(linktext)
+  Dim anchors
+  Dim ItemNr
+
+  Set anchors = IE.document.getElementsbyTagname("a")
+  For ItemNr = 0 to anchors.length - 1
+    If anchors.Item(ItemNr).innertext = linktext Then
+     anchors.Item(ItemNr).click
+   End If
+  next
+
+  do while IE.Busy
+  loop
+End Sub
+
+'This function extracts text from a specific tag by name and index
+'e.g. TABLE,0 (1st Table element) or P,1 (2nd Paragraph element)
+'set all to 1 to extract all HTML, 0 for only inside text without HTML
+Function ExtractTag(TagName,Num,all)
+  dim t
+  set t = IE.document.getElementsbyTagname(Tagname)
+  if all=1 then
+    ExtractTag = t.Item(Num).outerHTML
+  else
+    ExtractTag = t.Item(Num).innerText
+  end if
+End Function
+' //////////////////////////////////////////////////////////////////////////////
+' |
+' | Create_variables_globales
+' |
+' //////////////////////////////////////////////////////////////////////////////
+' -----------------------------------------------------------------------------
+'   Création des variables globales & des objets globaux
+' -----------------------------------------------------------------------------
+Function Create_variables_globales()
+Dim g_strScriptPath, g_strScriptName, g_strScriptFolder, i
+
+CMDLine=objPath.commandLine
+CMDLen=len(CMDLine)
+g_strScriptName=right(CMDLine, CMDLen-1)
+g_strScriptPath = right(CMDLine, CMDLen-1)
+g_strScriptFolder = g_strScriptPath
+g_strScriptDrive = Left(g_strScriptPath,instr(g_strScriptFolder,"\")-1)
+
+' MsgBox("g_strScriptDrive = " & g_strScriptDrive )
+
+Rep_Ini_CR = g_strScriptDrive & "\Global"
+Rep_locdata ="p:\Documents\My Business Objects Documents\LocData"
+
+g_strScriptFolder = Left(g_strScriptFolder,instrrev(g_strScriptFolder,"\")-1)
+
+' msgbox "g_strScriptFolder = " & g_strScriptFolder
+
+pos=InStr(g_strScriptName, chr(34))
+g_strScriptName = left(g_strScriptName, pos-1)
+
+pos_rev = instrrev(g_strScriptName,"\")
+g_strScriptName = mid(g_strScriptName, pos_rev+1)
+
+i = InStr(g_strScriptName, ".")
+If i <> 0 Then
+    g_strScriptNameNoExt = Left(g_strScriptName, i - 1)
+Else
+    g_strScriptNameNoExt = g_strScriptName
+End If
+
+Rep_HTA = g_strScriptFolder
+Rep_ini = g_strScriptFolder
+Rep_reports = g_strScriptFolder & "/Logs"
+
+i = InStr(g_strScriptName, ".")
+If i <> 0 Then
+    g_strScriptNameNoExt = Left(g_strScriptName, i - 1)
+Else
+    g_strScriptNameNoExt = g_strScriptName
+End If
+
+Nom_fichier_CR          = Rep_Ini_CR & "\CR.ini"
+Nom_fichier_PWD          = Rep_Ini_CR & "\PWD.ini"
+
+Mode_debug           = "OUI"
+
+End Function
+
+Function Create_log_file()
+'********************************************************************
+' Creation du fichier log
+'
+' Ce Fichier est créé dans le Répertoire pointé par la variable Rep_reports
+' Le nom du fichier est :MikeBkup_Log_mmmdd.yyyy_hh.mm.txt
+'
+'********************************************************************
+Dim tempdate
+Const ForReading = 1
+Const ForWriting = 2
+Const ForAppending = 8
+
+tempdate = now()
+Dim  Nom_table, Nom_table_periode, Nom_index, Nom_index_periode
+Dim temp, rc_test, Fichier_report, Type_CCM
+'
+' Nom abrégé du mois
+'
+tempdate = now()
+Mois = month(Tempdate)
+If Mois < 10 Then Mois = "0" & Mois
+
+Jour = day(Tempdate)
+If Jour < 10 Then Jour = "0" & Jour
+
+filenamedate = DatePart ("yyyy",tempdate) & Mois  & Jour & "_"
+
+temp = DatePart ("h",tempdate)
+If temp < 10 Then temp = "0" & temp
+filenamedate = filenamedate & temp & "."  'hour as hh
+
+temp =  DatePart ("n",tempdate)
+If temp < 10 Then temp = "0" & temp
+filenamedate = filenamedate & temp        'minutes as mm
+
+Fichier_log = Rep_reports & "\"&g_strScriptNameNoExt  & "_" & filenamedate & ".log"
+
+Set Fichier_log_obj = FSO.createtextfile(Fichier_log,True)
+Fichier_log_obj.Close
+Set Fichier_log_obj = FSO.OpenTextFile(Fichier_log,ForAppending,True)
+
+End Function
+
+' //////////////////////////////////////////////////////////////////////////////
+' |
+' | call WriteLogFile
+' |
+' //////////////////////////////////////////////////////////////////////////////
+Function WriteLogFile(iResult, sLogInfo )
+
+    Const ForReading    = 1
+    Const ForWriting     = 2
+    Const ForAppending = 8
+    Dim sLog, fFile
+
+ '   wscript.echo "dans call WriteLogFile"
+ '   Wscript.echo Fichier_log
+ '   wscript.echo iResult
+ '   wscript.echo sLogInfo
+
+    If iResult = 0 Then
+        sLog = Date & " - " & Time & " == INFO    = " & sLogInfo
+    Elseif iResult = 1 Then
+        sLog = Date & " - " & Time & " == ERREUR  = " & sLogInfo
+    Elseif iResult = 2 Then
+        sLog = Date & " - " & Time & " == WARNING = " & sLogInfo
+    Elseif iResult = 3 Then
+        sLog = Date & " - " & Time & " == DEBUG   = " & sLogInfo
+    End If
+    Fichier_log_obj.writeline sLog
+End Function
+
+Sub OpenScript
+'DATE       : 21/07/2004
+'Description    : enregister le log affiche dans un fichier
+'Modification v240 29/09/2004 Florence Deforge :
+'passage des parametres en variables globales
+    on error resume next
+    Dim oFile       'objet fichier a enresitre
+    sLogFile = InputBox("Tapez le nom du fichier à afficher (exemple: C:\log_atl\Mylog.log).")
+    If sLogFile = "" Then
+        Exit Sub
+    End If
+    Set oFile = FSo.OpenTextFile(sLogFile)
+    sHTML = "<textarea cols=140 rows=6>"
+    sHTML = sHTML & oFile.ReadAll()
+    sHTML = sHTML & "</textarea>"
+    code.InnerHTML =  sHTML
+    oFile.Close
+End Sub
+
+Sub HandleClassChange
+        document.getElementById("proceedImg").src="img/Proceed-active.png"
+End Sub
+
+'****************************************************************************************
+'* fonctions associees aux boutons EXECUTER
+'****************************************************************************************
+
+sub refreshLog()
+'DATE       : 21/05/2013
+'Description    : recupere le contenu du fichier de log pour l'afficher
+'Modification : v301 08/11/2004 F.DEforge
+'lecture du nom du fichier de log dans la base de registre.
+
+    Dim sCmdType    'commande type permettant d'afficher le contenu du fichier de log
+    Dim sLog        'chaine contenant le log, a afficher
+    Dim oLogFile    'objet fichier de log
+    Dim arrFileLines()  'tableau contenant les lignes de log a afficher
+    Dim i           'indice de parcours du tableau
+    Dim bResult
+
+    On Error Resume Next
+
+'-----------------------------------------------------------------------------
+'on envoie le fichier de log dans un fichier temporaire pour eviter le lock
+'-----------------------------------------------------------------------------
+    sCmdType = "cmd.exe /c type " & sLogFile & " > " & sLogType
+    call oShell.Run(sCmdType,0, true)
+'-----------------------------------------------------------------------------
+'on affiche le contenu du fichier temporaire de la fin au debut
+'-----------------------------------------------------------------------------
+'*lecture du fichier temporaire
+    set oLogFile = FSo.OpenTextFile(sLogType, 1, False)
+    Do Until oLogFile.AtEndOfStream
+        Redim Preserve arrFileLines(i)
+        arrFileLines(i) = oLogFile.ReadLine
+        i = i + 1
+    Loop
+    oLogFile.Close
+'*inversion du contenu
+    sLog=""
+    For l = Ubound(arrFileLines) to LBound(arrFileLines) Step -1
+        arrFileLines(l)   = Replace(arrFileLines(l), chr(10), " ")
+        arrFileLines(l)   = Replace(arrFileLines(l), chr(13), " ")
+        if len( trim(arrFileLines(l))) >0 then
+            sLog = sLog & arrFileLines(l) & chr(10)
+        End if
+    Next
+    erase arrFileLines
+    sHTML = "<textarea id=codeText cols=140 rows=6 >" & sLog
+    '*mise a jour de la zone d'affichage du log
+    code.InnerHTML = sHTML
+    'on controle l'existence du fichier flag  -- si il existe on sort de la boucle
+    if FSo.fileExists(sFlagFile) Then
+        bGoOn = False
+    end If
+    if bGoOn = false Then
+        window.clearInterval(iTimer)
+        Call endScript()
+    end If
+end Sub
+
+Sub Sleep(MSecs)
+' Set fso = CreateObject("Scripting.FileSystemObject")
+  If Fso.FileExists("sleeper.vbs")=False Then
+	Set objOutputFile = fso.CreateTextFile("sleeper.vbs", True)
+	objOutputFile.Write "wscript.sleep WScript.Arguments(0)"
+	objOutputFile.Close
+  End If
+ CreateObject("WScript.Shell").Run "sleeper.vbs " & MSecs,1 , True
+ End Sub
+
+Function Modif_ReceiveTimeout()
+
+'        msgbox "dans Modif_connex_ODBC"
+
+    document.getElementById("proceedImg").src="img/Proceed.png"
+    sBaseCle = "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings"
+
+    call  WriteLogFile(0," ")
+	Call RegEcrire(sBaseCle,"ReceiveTimeout", Database,"REG_DWORD")
+End Function
+Function Modif_MIPS_ODBC()
+
+'        msgbox "dans Modif_connex_ODBC"
+
+    document.getElementById("proceedImg").src="img/Proceed.png"
+
+    sBaseCle = "HKCU\SOFTWARE\ODBC\ODBC.INI\ODBC Data Sources"
+
+	If  Driver = "SQL" then
+		  Driver = "C:\\WINDOWS\\System32\\SQLSRV32.dll"
+	End if
+	If Language = "NULL" then
+		  Language = "us_english"
+	End if
+	If Quotedid = "NULL" then
+			Quotedid = "NO"
+	End if
+
+	Scle = ODBC_MIPS
+	Database = BDD_MIPS
+	Description = "connexion au serveur de la CR " & Trim(ID_CR) & ", base " & Database
+
+	Nom_serveur   = SQL_MIPS
+	Strvalue = "SQL Server"
+
+	Call RegEcrire(sBaseCle,Scle, Strvalue, "REG_SZ")
+	sBaseCle = "HKCU\SOFTWARE\ODBC\ODBC.INI"
+	Call RegEcrire(sBaseCle,Scle, "", "REG_SZ")
+
+	sBaseCle = "HKCU\SOFTWARE\ODBC\ODBC.INI\" & scle
+	call  WriteLogFile(0," ")
+	Call RegEcrire(sBaseCle,"Database", Database,"REG_SZ")
+	Call RegEcrire(sBaseCle,"Description", Description,"REG_SZ")
+	Call RegEcrire(sBaseCle,"Driver", Driver,"REG_SZ")
+	Call RegEcrire(sBaseCle,"Server", Nom_serveur,"REG_SZ")
+	Call RegEcrire(sBaseCle,"Trusted_Connection", Trusted_connection,"REG_SZ")
+	Call RegEcrire(sBaseCle,"Language", Language,"REG_SZ")
+	Call RegEcrire(sBaseCle,"QuotedId", Quotedid,"REG_SZ")
+End Function
+
+Function Modif_AUDIT_ODBC()
+
+'        msgbox "dans Modif_connex_ODBC"
+
+    document.getElementById("proceedImg").src="img/Proceed.png"
+
+    sBaseCle = "HKCU\SOFTWARE\ODBC\ODBC.INI\ODBC Data Sources"
+'    Item_connx = split(Ligne_selectee,";")
+
+'	msgbox "Ligne_selectee = " & Ligne_selectee
+'    Cr_traitee = Item_connx(0)
+
+'	Nom_connexion = Trim(Item_connx(1))
+'	Nom_serveur = Trim(Item_connx(2))
+'	Database = Trim(Item_connx(3))
+'	Trusted_connection  = Trim(Ucase(Item_connx(4)))
+'	Driver              = Trim(Item_connx(5))
+'	Language            = Trim(Item_connx(6))
+'	Quotedid            = Trim(Item_connx(7))
+
+	If  Driver = "SQL" then
+		  Driver = "C:\\WINDOWS\\System32\\SQLSRV32.dll"
+	End if
+	If Language = "NULL" then
+		  Language = "us_english"
+	End if
+	If Quotedid = "NULL" then
+			Quotedid = "NO"
+	End if
+
+	Scle = ODBC_AUDIT
+	Database = BDD_AUDIT
+	Description = "connexion au serveur de la CR " & Trim(ID_CR) & ", base " & Database
+
+	Nom_serveur   = SQL_MIPS
+	Strvalue = "SQL Server"
+
+	Call RegEcrire(sBaseCle,Scle, Strvalue, "REG_SZ")
+	sBaseCle = "HKCU\SOFTWARE\ODBC\ODBC.INI"
+	Call RegEcrire(sBaseCle,Scle, "", "REG_SZ")
+
+	sBaseCle = "HKCU\SOFTWARE\ODBC\ODBC.INI\" & scle
+	call  WriteLogFile(0," ")
+	Call RegEcrire(sBaseCle,"Database", Database,"REG_SZ")
+	Call RegEcrire(sBaseCle,"Description", Description,"REG_SZ")
+	Call RegEcrire(sBaseCle,"Driver", Driver,"REG_SZ")
+	Call RegEcrire(sBaseCle,"Server", Nom_serveur,"REG_SZ")
+	Call RegEcrire(sBaseCle,"Trusted_Connection", Trusted_connection,"REG_SZ")
+	Call RegEcrire(sBaseCle,"Language", Language,"REG_SZ")
+	Call RegEcrire(sBaseCle,"QuotedId", Quotedid,"REG_SZ")
+End Function
+
+'-----------------------------------------------------------------------------------------------------------------------------------------------------------
+' 15.12 - Ecrire une valeur dans le registre
+' 	  Nom de la Fonction :	RegEcrire
+' 	  Paramètres :  	sRegistre	= Chemin de la clé incluant le type de registre
+'				sCle		= Valeur du registre à modifier
+'				sValeur		= Nouvelle affectation à passer sur le valeur (sCle)
+'				sType		= Type de la donnée (Au sens registre)
+' 	  Retour :	Null si erreur, la valeur lue sinon
+' 	  Exemple :     Call RegEcrire ( "HKCU\Environment", "TMP", "%USERPROFILE%\Local Settings\Temp", "REG_EXPAND_SZ" )
+'-----------------------------------------------------------------------------------------------------------------------------------------------------------
+Sub RegEcrire ( sRegistre, sCle, sValeur, sType )
+	Dim sTmpCle
+	Dim sTmpValeur
+	Dim sCheminComplet
+	Dim sValeurAEcrire
+	sCheminComplet = sRegistre
+	If ( IsNull ( sCle ) ) Then
+		sTmpCle = "Null"
+		If ( IsNull ( sValeur ) ) Then
+			sCheminComplet = sCheminComplet + "\{CleTemporaire}\"
+		Else
+			sCheminComplet = sCheminComplet + "\"
+		End If
+	Else
+		sTmpCle = """" & sCle & """"
+		If ( ( Right ( sCheminComplet, 1 ) <> "\" ) and ( Left ( sCle, 1 ) <> "\" ) ) Then
+			sCheminComplet = sCheminComplet + "\"
+		End If
+		sCheminComplet = sCheminComplet + sCle
+	End If
+	If ( IsNull ( sValeur ) ) Then
+		sTmpValeur = "Null"
+		sValeurAEcrire = ""
+	Else
+		sTmpValeur = """" & sValeur & """"
+		sValeurAEcrire = sValeur
+	End If
+	call  WriteLogFile(3, "Call RegEcrire ( """ & sRegistre & """, " & sTmpCle & ", " & sTmpValeur & ", """ & sType & """ )" )
+
+'	Set oWshShell     = CreateObject("WScript.Shell")
+
+	Call oShell.RegWrite ( sCheminComplet, sValeurAEcrire, sType )
+	If ( IsNull ( sValeur ) ) Then
+		Call oShell.RegDelete ( sCheminComplet )
+	End If
+
+End Sub
+' ===============================================================
+' |
+' | Nom      : En_erreur
+' |
+' | fonction : Gestion des erreurs
+' |
+' ===============================================================
+
+Function En_erreur(txt)
+
+if err.number <> 0 Then
+    En_erreur     = True
+    txt = txt & " - " & err.description & " Nr: " & err.number
+    err.clear
+    if errorInfo = "" then errorInfo = txt
+'
+'--- important for job status
+'
+    call WriteLogFile(1, "")
+    call WriteLogFile(1, "")
+    call WriteLogFile(1,"----> PROCPROGRAM:PROGRAM_ERROR")
+    call WriteLogFile(1,"----> 62009")
+    call WriteLogFile(1,"----> " & txt)
+    call WriteLogFile(1,"----> Arret immediat du script")
+    call WriteLogFile(1, "")
+else
+    En_erreur = False
+end if
+
+end function
+</script>
+
+<title>Positionnement CSS</title>
+</head>
+<body>
+	<div id="bandeau">
+		<TABLE BORDER="2" RULES="NONE" Width="100%">
+      		<tr>
+				<td width="8%"><img src="img/cancel.png" onclick="VBScript:window.close" class="showHand" alt="Sortie du HTA" /></td>
+				<td width="8%"><img src="img/c_prompt_button.png" onclick="commandPrompt()" class="showHand" alt="Ouverture session MS-DOS" /></td>
+				<td width="8%"><img src="img/report.png" onclick="openPopup()" class="showHand" alt="Informations sur les scripts" /></td>
+                <td width="8%" align="right"><img id="proceedImg" src="img/proceed-active.png" onclick="RunScript()" class="showHand" alt="Demarrage du script" /></td>
+			</tr>
+		</TABLE>
+    </div>
+	<div id="menu"><center><P><b><FONT SIZE="3">Choisissez le script a executer</FONT></b></P>
+	<table border bgcolor=#FFFFFF BORDERCOLOR=DarkKhaki>
+		<tr>
+            <td style="width:250px" valign="top"><b>
+				<input type="radio" name="Exec_02" value="Connx_SRVBO">Connx Serveur BO
+            </b>
+            </td>
+		</tr>
+		<tr>
+            <td style="width:250px" valign="top"><b>
+                <input type="radio" name="Exec_02" value="Connx_SRVNEO">Connx Serveur NEOBATCH
+             </b>
+            </td>
+		</tr>
+		<tr>
+            <td style="width:250px" valign="top"><b>
+                <input type="radio" name="Exec_02" value="Connx_SRVSQL">Connx Serveur MIPS
+             </b>
+            </td>
+		</tr>
+	</table>
+
+	<table border BGCOLOR=#FF9999 BORDERCOLOR=SlateBlue>
+		<tr>
+            <td style="width:250px" valign="top"><b>
+                <input type="radio" name="Exec_02" value="Connx_SQLMIPS">Connx SQL MIPS
+             </b>
+            </td>
+		</tr>
+		<tr>
+            <td style="width:250px" valign="top"><b>
+                <input type="radio" name="Exec_02" value="Connx_SQLAUDIT">Connx SQL Audit
+             </b>
+            </td>
+		</tr>
+	</table>
+
+	<table border BGCOLOR=#99CCFF BORDERCOLOR=MediumSeaGreen>
+		<tr>
+            <td style="width:250px" valign="top"><b>
+                <input type="radio" name="Exec_02" value="Connx_DESKI2">BO DESKI 2-Tier
+             </b>
+            </td>
+		</tr>
+		<tr>
+            <td style="width:250px" valign="top"><b>
+                <input type="radio" name="Exec_02" value="Connx_DESKI3">BO DESKI 3-Tier
+             </b>
+            </td>
+		</tr>
+		<tr>
+            <td style="width:250px" valign="top"><b>
+                <input type="radio" name="Exec_02" value="Connx_DESIGNER">BO Designer
+             </b>
+            </td>
+		</tr>
+		<tr>
+            <td style="width:250px" valign="top"><b>
+                <input type="radio" name="Exec_02" value="Connx_WebiRich">BO Webi Rich client
+             </b>
+            </td>
+		</tr>
+	</table>
+
+	<table border BGCOLOR=#90EE90 BORDERCOLOR=DarkSeaGreen>
+
+		<tr>
+            <td style="width:250px" valign="top"><b>
+                <input type="radio" name="Exec_02" value="Connx_CMC">CMC
+             </b>
+            </td>
+		</tr>
+		<tr>
+            <td style="width:250px" valign="top"><b>
+                <input type="radio" name="Exec_02" value="Connx_Infoview">Infoview
+             </b>
+            </td>
+		</tr>
+		<tr>
+            <td style="width:250px" valign="top"><b>
+                <input type="radio" name="Exec_02" value="Connx_QBuilder">Query Builder
+             </b>
+            </td>
+		</tr>
+
+	</table>
+
+	<table border BORDERCOLOR=RosyBrown>
+		<tr>
+            <td style="width:250px" valign="top"><b>
+                <input type="radio" name="Exec_02" value="REMEDY">REMEDY
+             </b>
+            </td>
+		</tr>
+	</table>
+</div>
+
+<div id="contenu"><center><P><b><FONT SIZE="3">Choisissez une CR</b></P>
+	<table border>
+		<tr>
+            <td style="width:80px" valign="top" title="Alpes-Provence - 2.1 - EXA - Migre le 6/05/2014 - SP6"><b>
+                      <input type="radio" name="Groupe_01" value="AL">AL
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Anjou Maine - 1.3  - Atlantica - SP6"><b>
+                      <input type="radio" name="Groupe_01" value="AM">AM
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Alsace-Vosges - 2.0 - SP6"><b>
+                      <input type="radio" name="Groupe_01" value="AO">AO
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Des Savoies (Nice) - 3.0 - AMT - Migre le 11/11/2013 - SP6"><b>
+                      <input type="radio" name="Groupe_01" value="AP">AP
+             </b>
+            </td>
+
+            <td style="width:80px" valign="top" title="Aquitaine - 1.3 - Atlantica - Migre le 6/05/2014 - SP6"><b>
+                      <input type="radio" name="Groupe_01" value="AQ">AQ
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Atlantique Vendée - 1.1 - Atlantica - SP6"><b>
+                      <input type="radio" name="Groupe_01" value="AV">AV
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Brie-Picardie - 2.0 - SP6"><b>
+                      <input type="radio" name="Groupe_01" value="BI">BI
+             </b>
+            </td>
+		</tr>
+		<tr>
+            <td style="width:80px" valign="top" title="Centre France - 3.0 - AMT - Migre le 11/11/2013"><b>
+                      <input type="radio" name="Groupe_01" value="BP">BP
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Côtes d'Armor - 1.3 - Atlantica - SP6"><b>
+                      <input type="radio" name="Groupe_01" value="CA">CA
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Charente Périgord - 2.2 - Comete - Migre le 17/11/2013"><b>
+                      <input type="radio" name="Groupe_01" value="CE">CE
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Centre Loire - 2.0 - SP6"><b>
+                      <input type="radio" name="Groupe_01" value="CL">CL
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Centre-Ouest - 1.3 - Atlantica - SP6"><b>
+                      <input type="radio" name="Groupe_01" value="CO">CO
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Provence Côtes d'Azur - 3.0 - AMT - Migre le 11/11/2013"><b>
+                      <input type="radio" name="Groupe_01" value="CP">CP
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Corse - 2.1 - EXA - Migre le 13/10/2013"><b>
+                      <input type="radio" name="Groupe_01" value="CR">CR
+             </b>
+            </td>
+		</tr>
+		<tr>
+            <td style="width:80px" valign="top" title="Charente Maritime Deux Sèvres - 2.0 - Comete"><b>
+                      <input type="radio" name="Groupe_01" value="CS">CS
+             </b>
+            </td>
+			<td style="width:80px" valign="top" title="Chalus (Nice) - 3.0 - AMT - Migre le 11/11/2013"><b>
+                      <input type="radio" name="Groupe_01" value="DP">DP
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Franche-Comté - 1.0 - SP6"><b>
+                      <input type="radio" name="Groupe_01" value="FC">FC
+             </b>
+            </td>
+			<td style="width:80px" valign="top" title="Finistère - 1.1 - Atlantica - SP6"><b>
+                      <input type="radio" name="Groupe_01" value="FI">FI
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Guadeloupe - 1.1 - Atlantica"><b>
+                      <input type="radio" name="Groupe_01" value="GU">GU
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Paris-Ile-de-France - 1.0 - Synergie - SP6"><b>
+                      <input type="radio" name="Groupe_01" value="IF">IF
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Ille-et-Vilaine - 1.0 - Atlantica - SP6"><b>
+                      <input type="radio" name="Groupe_01" value="IV">IV
+             </b>
+            </td>
+
+		</tr>
+		<tr>
+            <td style="width:80px" valign="top" title="Champagne-Bourgogne - 3.0 - AMT - Migre le 11/11/2013"><b>
+                      <input type="radio" name="Groupe_01" value="JP">JP
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Loire-Haute Loire - 3.0 - AMT - Migre le 11/11/2013"><b>
+                      <input type="radio" name="Groupe_01" value="KP">KP
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Languedoc - 2.1 - EXA - Migre le 13/10/2013"><b>
+                      <input type="radio" name="Groupe_01" value="LA">LA
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Lorraine - 2.0"><b>
+                      <input type="radio" name="Groupe_01" value="LO">LO
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Centre-Est - 3.0 - AMT - Migre le 11/11/2013"><b>
+                      <input type="radio" name="Groupe_01" value="LP">LP
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Martinique - 1.1 - Atlantica"><b>
+                      <input type="radio" name="Groupe_01" value="MA">MA
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Morbihan - 1.3 - Atlantica - SP6"><b>
+                      <input type="radio" name="Groupe_01" value="MO">MO
+             </b>
+            </td>
+
+		</tr>
+		<tr>
+            <td style="width:80px" valign="top" title="Nord-Est - 1.1 - Migre le 6/05/2014 - SP6"><b>
+                      <input type="radio" name="Groupe_01" value="NE">NE
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Nord de France - 2.2 - Comete - Migre le 17/11/2013"><b>
+                      <input type="radio" name="Groupe_01" value="NF">NF
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Nord-Midi Pyrénées - 2.1 - EXA - Migre le 13/10/2013"><b>
+                      <input type="radio" name="Groupe_01" value="NM">NM
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Normandie - 1.3 - Atlantica - Migre le 6/05/2014 - SP6"><b>
+                      <input type="radio" name="Groupe_01" value="NO">NO
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Normandie-Seine - 2.2 - Comete - Migre le 17/11/2013 - SP6"><b>
+                      <input type="radio" name="Groupe_01" value="NS">NS
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Pyrénées-Gascogne - 1.1 - SP6"><b>
+                      <input type="radio" name="Groupe_01" value="PG">PG
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Reunion - 2.1 - EXA - Migre le 13/10/2013"><b>
+                      <input type="radio" name="Groupe_01" value="RE">RE
+             </b>
+            </td>
+
+		</tr>
+		<tr>
+            <td style="width:80px" valign="top" title="Sud Rhône-Alpes  - 3.0 - AMT - Migre le 11/11/2013 - SP6"><b>
+                      <input type="radio" name="Groupe_01" value="RP">RP
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Sud Méditerranée - 2.1 - EXA - Migre le 13/10/2013"><b>
+                      <input type="radio" name="Groupe_01" value="SM">SM
+             </b>
+            </td>
+
+            <td style="width:80px" valign="top" title="Toulouse - 2.1 - EXA - Migre le 13/10/2013 - SP6"><b>
+                      <input type="radio" name="Groupe_01" value="TO">TO
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Touraine-Poitou - 1.3 - Atlantica - SP6"><b>
+                      <input type="radio" name="Groupe_01" value="TP">TP
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Val de France - 1.1 - Synergie - SP6"><b>
+                      <input type="radio" name="Groupe_01" value="VF">VF
+             </b>
+            </td>
+            <td></td>
+            <td></td>
+		</tr>
+		<tr>
+            <td style="width:80px" valign="top" title="Nehom - DEV"><b>
+                      <input type="radio" name="Groupe_01" value="NEHOM">NEHOM
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Ref V1 - DEV"><b>
+                <input type="radio" name="Groupe_01" value="REFV1">REF V1
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Dev - DEVTU"><b>
+                      <input type="radio" name="Groupe_01" value="DEVTU">DEVTU
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Dev - VMOE"><b>
+                      <input type="radio" name="Groupe_01" value="VMOE">VMOE
+             </b>
+            </td>
+            <td style="width:80px" valign="top" title="Dev - VMOA"><b>
+                      <input type="radio" name="Groupe_01" value="VMOA">VMOA
+             </b>
+            </td>
+            <td></td>
+		</tr>
+	</table>
+</div>
+
+</body>
+</html>
