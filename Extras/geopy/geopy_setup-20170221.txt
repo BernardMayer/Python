@@ -1,0 +1,7 @@
+D:\myTools\Python\Extras>pip install D:\myTools\Python\Extras\geopy-1.11.0-py2.py3-none-any.whl
+
+Processing d:\mytools\python\extras\geopy-1.11.0-py2.py3-none-any.whl
+Installing collected packages: geopy
+Successfully installed geopy-1.11.0
+
+D:\myTools\Python\Extras>

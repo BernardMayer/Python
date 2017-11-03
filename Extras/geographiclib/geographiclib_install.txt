@@ -1,0 +1,54 @@
+ INFO : Install de geographiclib
+
+D:\myTools\Python>cd /d D:\myTools\Python\Extras\geographiclib-1.47 
+
+D:\myTools\Python\Extras\geographiclib-1.47>D:\myTools\Python\Python36\python.exe setup.py install 
+running install
+running build
+running build_py
+creating build
+creating build\lib
+creating build\lib\geographiclib
+copying geographiclib\accumulator.py -> build\lib\geographiclib
+copying geographiclib\constants.py -> build\lib\geographiclib
+copying geographiclib\geodesic.py -> build\lib\geographiclib
+copying geographiclib\geodesiccapability.py -> build\lib\geographiclib
+copying geographiclib\geodesicline.py -> build\lib\geographiclib
+copying geographiclib\geomath.py -> build\lib\geographiclib
+copying geographiclib\polygonarea.py -> build\lib\geographiclib
+copying geographiclib\__init__.py -> build\lib\geographiclib
+creating build\lib\geographiclib\test
+copying geographiclib/test\test_geodesic.py -> build\lib\geographiclib/test
+copying geographiclib/test\__init__.py -> build\lib\geographiclib/test
+running install_lib
+creating D:\myTools\Python\Python36\Lib\site-packages\geographiclib
+copying build\lib\geographiclib\accumulator.py -> D:\myTools\Python\Python36\Lib\site-packages\geographiclib
+copying build\lib\geographiclib\constants.py -> D:\myTools\Python\Python36\Lib\site-packages\geographiclib
+copying build\lib\geographiclib\geodesic.py -> D:\myTools\Python\Python36\Lib\site-packages\geographiclib
+copying build\lib\geographiclib\geodesiccapability.py -> D:\myTools\Python\Python36\Lib\site-packages\geographiclib
+copying build\lib\geographiclib\geodesicline.py -> D:\myTools\Python\Python36\Lib\site-packages\geographiclib
+copying build\lib\geographiclib\geomath.py -> D:\myTools\Python\Python36\Lib\site-packages\geographiclib
+copying build\lib\geographiclib\polygonarea.py -> D:\myTools\Python\Python36\Lib\site-packages\geographiclib
+creating D:\myTools\Python\Python36\Lib\site-packages\geographiclib\test
+copying build\lib\geographiclib\test\test_geodesic.py -> D:\myTools\Python\Python36\Lib\site-packages\geographiclib\test
+copying build\lib\geographiclib\test\__init__.py -> D:\myTools\Python\Python36\Lib\site-packages\geographiclib\test
+copying build\lib\geographiclib\__init__.py -> D:\myTools\Python\Python36\Lib\site-packages\geographiclib
+byte-compiling D:\myTools\Python\Python36\Lib\site-packages\geographiclib\accumulator.py to accumulator.cpython-36.pyc
+byte-compiling D:\myTools\Python\Python36\Lib\site-packages\geographiclib\constants.py to constants.cpython-36.pyc
+byte-compiling D:\myTools\Python\Python36\Lib\site-packages\geographiclib\geodesic.py to geodesic.cpython-36.pyc
+byte-compiling D:\myTools\Python\Python36\Lib\site-packages\geographiclib\geodesiccapability.py to geodesiccapability.cpython-36.pyc
+byte-compiling D:\myTools\Python\Python36\Lib\site-packages\geographiclib\geodesicline.py to geodesicline.cpython-36.pyc
+byte-compiling D:\myTools\Python\Python36\Lib\site-packages\geographiclib\geomath.py to geomath.cpython-36.pyc
+byte-compiling D:\myTools\Python\Python36\Lib\site-packages\geographiclib\polygonarea.py to polygonarea.cpython-36.pyc
+byte-compiling D:\myTools\Python\Python36\Lib\site-packages\geographiclib\test\test_geodesic.py to test_geodesic.cpython-36.pyc
+byte-compiling D:\myTools\Python\Python36\Lib\site-packages\geographiclib\test\__init__.py to __init__.cpython-36.pyc
+byte-compiling D:\myTools\Python\Python36\Lib\site-packages\geographiclib\__init__.py to __init__.cpython-36.pyc
+running install_egg_info
+Writing D:\myTools\Python\Python36\Lib\site-packages\geographiclib-1.47-py3.6.egg-info
+
+D:\myTools\Python\Extras\geographiclib-1.47>D:\myTools\Python\Python36\python.exe -m unittest geographiclib.test.test_geodesic 
+INFO : Install de gpxpy
+
+D:\myTools\Python\Extras\geographiclib-1.47>cd /d D:\myTools\Python\Extras\gpxpy-1.1.2 
+
+D:\myTools\Python\Extras\gpxpy-1.1.2>cd /d D:\myTools\Python 

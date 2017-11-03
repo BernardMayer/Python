@@ -1,0 +1,18 @@
+C:\CAT_dskD\myTools\Python\Extras\gpxpy-1.1.2>python .\setup.py install --record files.txt
+
+C:\CAT_dskD\myTools\Python\Python36\Lib\site-packages\gpxpy\geo.py
+C:\CAT_dskD\myTools\Python\Python36\Lib\site-packages\gpxpy\gpx.py
+C:\CAT_dskD\myTools\Python\Python36\Lib\site-packages\gpxpy\gpxfield.py
+C:\CAT_dskD\myTools\Python\Python36\Lib\site-packages\gpxpy\gpxxml.py
+C:\CAT_dskD\myTools\Python\Python36\Lib\site-packages\gpxpy\parser.py
+C:\CAT_dskD\myTools\Python\Python36\Lib\site-packages\gpxpy\utils.py
+C:\CAT_dskD\myTools\Python\Python36\Lib\site-packages\gpxpy\__init__.py
+C:\CAT_dskD\myTools\Python\Python36\Lib\site-packages\gpxpy\__pycache__\geo.cpython-36.pyc
+C:\CAT_dskD\myTools\Python\Python36\Lib\site-packages\gpxpy\__pycache__\gpx.cpython-36.pyc
+C:\CAT_dskD\myTools\Python\Python36\Lib\site-packages\gpxpy\__pycache__\gpxfield.cpython-36.pyc
+C:\CAT_dskD\myTools\Python\Python36\Lib\site-packages\gpxpy\__pycache__\gpxxml.cpython-36.pyc
+C:\CAT_dskD\myTools\Python\Python36\Lib\site-packages\gpxpy\__pycache__\parser.cpython-36.pyc
+C:\CAT_dskD\myTools\Python\Python36\Lib\site-packages\gpxpy\__pycache__\utils.cpython-36.pyc
+C:\CAT_dskD\myTools\Python\Python36\Lib\site-packages\gpxpy\__pycache__\__init__.cpython-36.pyc
+C:\CAT_dskD\myTools\Python\Python36\Scripts\gpxinfo
+C:\CAT_dskD\myTools\Python\Python36\Lib\site-packages\gpxpy-1.1.2-py3.6.egg-info

@@ -1,0 +1,48 @@
+running install
+running bdist_egg
+running egg_info
+writing LatLon.egg-info\PKG-INFO
+writing dependency_links to LatLon.egg-info\dependency_links.txt
+writing requirements to LatLon.egg-info\requires.txt
+writing top-level names to LatLon.egg-info\top_level.txt
+reading manifest file 'LatLon.egg-info\SOURCES.txt'
+writing manifest file 'LatLon.egg-info\SOURCES.txt'
+installing library code to build\bdist.win-amd64\egg
+running install_lib
+running build_py
+creating build
+creating build\lib
+creating build\lib\LatLon
+copying LatLon\lat_lon.py -> build\lib\LatLon
+copying LatLon\__init__.py -> build\lib\LatLon
+creating build\bdist.win-amd64
+creating build\bdist.win-amd64\egg
+creating build\bdist.win-amd64\egg\LatLon
+copying build\lib\LatLon\lat_lon.py -> build\bdist.win-amd64\egg\LatLon
+copying build\lib\LatLon\__init__.py -> build\bdist.win-amd64\egg\LatLon
+byte-compiling build\bdist.win-amd64\egg\LatLon\lat_lon.py to lat_lon.cpython-36.pyc
+byte-compiling build\bdist.win-amd64\egg\LatLon\__init__.py to __init__.cpython-36.pyc
+creating build\bdist.win-amd64\egg\EGG-INFO
+copying LatLon.egg-info\PKG-INFO -> build\bdist.win-amd64\egg\EGG-INFO
+copying LatLon.egg-info\SOURCES.txt -> build\bdist.win-amd64\egg\EGG-INFO
+copying LatLon.egg-info\dependency_links.txt -> build\bdist.win-amd64\egg\EGG-INFO
+copying LatLon.egg-info\requires.txt -> build\bdist.win-amd64\egg\EGG-INFO
+copying LatLon.egg-info\top_level.txt -> build\bdist.win-amd64\egg\EGG-INFO
+creating dist
+creating 'dist\LatLon-1.0.2-py3.6.egg' and adding 'build\bdist.win-amd64\egg' to it
+removing 'build\bdist.win-amd64\egg' (and everything under it)
+Processing LatLon-1.0.2-py3.6.egg
+Removing c:\cat_dskd\mytools\python\python36\lib\site-packages\LatLon-1.0.2-py3.6.egg
+Copying LatLon-1.0.2-py3.6.egg to c:\cat_dskd\mytools\python\python36\lib\site-packages
+LatLon 1.0.2 is already the active version in easy-install.pth
+
+Installed c:\cat_dskd\mytools\python\python36\lib\site-packages\latlon-1.0.2-py3.6.egg
+Processing dependencies for LatLon==1.0.2
+Searching for pyproj
+Reading https://pypi.python.org/simple/pyproj/
+Downloading https://pypi.python.org/packages/29/72/5c1888c4948a0c7b736d10e0f0f69966e7c0874a660222ed0a2c2c6daa9f/pyproj-1.9.5.1.tar.gz#md5=027345e3c033fa400e0e64a1c80d34c9
+Best match: pyproj 1.9.5.1
+Processing pyproj-1.9.5.1.tar.gz
+Writing C:\Users\Bernard\AppData\Local\Temp\easy_install-v_1uz_st\pyproj-1.9.5.1\setup.cfg
+Running pyproj-1.9.5.1\setup.py -q bdist_egg --dist-dir C:\Users\Bernard\AppData\Local\Temp\easy_install-v_1uz_st\pyproj-1.9.5.1\egg-dist-tmp-7e15nw_m
+using bundled proj4..
