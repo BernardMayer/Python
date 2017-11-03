@@ -1,0 +1,13 @@
+
+D:\myTools\Python>D:\myTools\Python\Python36\Scripts\pip.exe install D:\myTools\Python\Extras\Excel\xlwt-1.2.0-py2.py3-none-any.whl 
+Processing d:\mytools\python\extras\excel\xlwt-1.2.0-py2.py3-none-any.whl
+Installing collected packages: xlwt
+Successfully installed xlwt-1.2.0
+ INFO : Install de geographiclib
+
+D:\myTools\Python>cd /d D:\myTools\Python\Extras\geographiclib-1.47 
+INFO : Install de gpxpy
+
+D:\myTools\Python\Extras\geographiclib-1.47>cd /d D:\myTools\Python\Extras\gpxpy-1.1.2 
+
+D:\myTools\Python\Extras\gpxpy-1.1.2>cd /d D:\myTools\Python 
