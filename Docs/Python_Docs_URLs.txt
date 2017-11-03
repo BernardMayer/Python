@@ -1,0 +1,14 @@
+http://www.dsimb.inserm.fr/~fuchs/python/cours_python.pdf
+
++ https://media.readthedocs.org/pdf/python-guide-fr/latest/python-guide-fr.pdf
+
+http://artifex.org/~hblanks/talks/2011/pep20_by_example.pdf
+
+http://pep8.org/
+
++ https://en.wikibooks.org/wiki/Non-Programmer's_Tutorial_for_Python_3/File_IO
+
+http://web.archive.org/web/20120815130844/http://www.amk.ca/python/writing/DB-API.html
+
+http://halfcooked.com/presentations/osdc2006/python_databases.html
+
