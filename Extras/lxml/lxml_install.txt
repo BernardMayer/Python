@@ -1,0 +1,13 @@
+
+D:\myTools\Python>D:\myTools\Python\Python36\Scripts\pip.exe install D:\myTools\Python\Extras\lxml\lxml-3.7.3-cp36-cp36m-win_amd64.whl 
+Processing d:\mytools\python\extras\lxml\lxml-3.7.3-cp36-cp36m-win_amd64.whl
+Installing collected packages: lxml
+Successfully installed lxml-3.7.3
+ INFO : Install de geographiclib
+
+D:\myTools\Python>cd /d D:\myTools\Python\Extras\geographiclib-1.47 
+INFO : Install de gpxpy
+
+D:\myTools\Python\Extras\geographiclib-1.47>cd /d D:\myTools\Python\Extras\gpxpy-1.1.2 
+
+D:\myTools\Python\Extras\gpxpy-1.1.2>cd /d D:\myTools\Python 
