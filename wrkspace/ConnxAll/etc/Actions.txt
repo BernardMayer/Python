@@ -1,0 +1,22 @@
+ActionId	ActionBtnLib	ActionGUIorder
+srvBov1	Connexion serveur BO v1	1
+cliSqlv1	Client SQL v1	2
+deski2v1	Deski 2 tiers v1	3
+deski3v1	Deski 3 tiers v1	4
+designv1	Designer v1	5
+cmcv1	CMC v1	6
+infoviewv1	Infoview v1	7
+srvBov2	Connexion serveur BO v2	8
+cliSqlv2	Client SQL v2	9
+deski2v2	Deski 2 tiers v2	10
+deski3v2	Deski 3 tiers v2	11
+designv2	Designer v2	12
+cmcv2	CMC v2	13
+infoviewv2	Infoview v2	14
+dirUniv	Répertoire univers	15
+dirRapp	Répertoire rapports	16
+		17
+qBuildv1	Query builder v1	18
+qBuildv2	Query builder v2	19
+		20
+remedy	Remedy	21

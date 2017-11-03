@@ -1,0 +1,61 @@
+AdhId	AdhLib	AdhNum	AdhAbrev	GUI-Id	GUI-Num	BO-User	BO-Pwd	BO-Host	ODBC-User	ODBC-Pwd	ODBC-DsnName	ODBCv1-User	ODBCv1-Pwd	ODBCv1-DsnName	NeoBatch-Host	DB-Host	DB-Base	DB-User	DB-Pwd	DBv1-Host	DBv1-Base	DBv1-User	DBv1-Pwd
+CH	Chalus (NICE)	764		13	1	ETH0589	EvelyneLauBen	swdppabobj01.zres.ztech						ISA1_SQL	10.155.173.181					DPp10-bobjsql\DPP10	DDPP10DTWH01J		
+DP	Chalus (NICE)	764		19	2	ETH0589	EvelyneLauBen	swdppabobj01.zres.ztech						ISA1_SQL	10.155.173.181					DPp10-bobjsql\DPP10	DDPP10DTWH01J		
+NE	Nord Est	802	CRNE	34	3	ETH0589	EvelyneLauBen	swnepabobj01.zres.ztech						ISA1_SQL	10.155.171.90								
+CB	Champagne Bourgogne (NICE)	810	CACB	10	4	ETH0589	EvelyneLauBen	swnepabobj01.zres.ztech						ISA1_SQL	10.155.173.182								
+JP	Champagne Bourgogne	810	CACB	26	5	ETH0589	EvelyneLauBen	swjppabobj01.zres.ztech						ISA1_SQL	10.155.173.182								
+NM	Nord Midi Pyrenees	812		36	6	ETH0589	EvelyneLauBen	swnmpabobj01.zres.ztech						ISA1_SQL	10.155.173.157								
+AL	Alpes Provence	813		1	7	ETH0589	EvelyneLauBen	swalpabobj01.zres.ztech						ISA1_SQL	10.155.173.158					ALp10-bobjsql\ALP10	DALP10DTWH01J		
+CS	Charente maritime deux Sevres	817	CRCS	18	8	ETH0589	EvelyneLauBen	swcspabobj01.zres.ztech						ISA1_SQL	10.155.171.85								
+CR	Corse	820		17	9	ETH0589	EvelyneLauBen	swcrpabobj01.zres.ztech						ISA1_SQL	10.155.173.159								
+CA	Cote d Armor	822		9	10	ETH0589	EvelyneLauBen	swcapabobj01.zres.ztech						ISA1_SQL	10.155.171.69								
+CE	Charente Perigord	824		11	11	ETH0589	EvelyneLauBen	swcepabobj01.zres.ztech						ISA1_SQL	10.155.173.164								
+FC	Franche Comte	825	CRFC	21	12	ETH0589	EvelyneLauBen	swfcpabobj02.zres.ztech						ISA1_SQL	10.166.160.17								
+FI	Finistere	829	CRFI	22	13	ETH0589	EvelyneLauBen	swfipabobj01.zres.ztech						ISA1_SQL	10.155.171.89								
+TO	Toulouse	831		46	14	ETH0589	EvelyneLauBen	swtopabobj01.zres.ztech						ISA1_SQL	10.155.173.160								
+AQ	Aquitaine	833		5	15	ETH0589	EvelyneLauBen	swaqpabobj01.zres.ztech						ISA1_SQL	10.155.171.68								
+LA	Languedoc	835		28	16	ETH0589	EvelyneLauBen	swlapabobj01.zres.ztech						ISA1_SQL	10.155.173.161								
+IV	Ille et Vilaine	836	CRIV	25	17	ETH0589	EvelyneLauBen	swivpabobj02.zres.ztech						ISA1_SQL	10.166.160.16								
+RP	Sud Rhone Alpes	839	SRA	42	18	ETH0589	EvelyneLauBen	swrppabobj01.zres.ztech						ISA1_SQL	10.155.173.167								
+SA	Sud Rhone Alpes (NICE)	839	SRA	43	19	ETH0589	EvelyneLauBen	swrppabobj01.zres.ztech						ISA1_SQL	10.155.173.167								
+VF	Val de France	844	CRVF	48	20	ETH0589	EvelyneLauBen	swvfpabobj01.zres.ztech						ISA1_SQL	10.155.171.88								
+KP	Loire Hte Loire	845	LHL	27	21	ETH0589	EvelyneLauBen	swkppabobj01.zres.ztech						ISA1_SQL	10.155.173.183								
+LH	Loire Hte Loire (NICE)	845	LHL	29	22	ETH0589	EvelyneLauBen	swkppabobj01.zres.ztech						ISA1_SQL	10.155.173.183								
+AV	Atlantique Vendee	847	CRAV	6	23	ETH0589	EvelyneLauBen	swavpabobj01.zres.ztech						ISA1_SQL	10.155.171.87								
+CL	Centre Loire	848	CRCL	14	24	ETH0589	EvelyneLauBen	swclpabobj01.zres.ztech						ISA1_SQL	10.155.171.84								
+MO	Morbihan	860		33	25	ETH0589	EvelyneLauBen	swmopabobj01.zres.ztech						ISA1_SQL	10.155.171.67								
+LO	Lorraine	861	CRLO	30	26	ETH0589	EvelyneLauBen	swlopabobj01.zres.ztech						ISA1_SQL	10.155.171.83								
+NO	Normandie	866		37	27	ETH0589	EvelyneLauBen	swnopabobj01.zres.ztech						ISA1_SQL	10.155.171.66								
+NF	Nord de France	867		35	28	ETH0589	EvelyneLauBen	swnfpabobj01.zres.ztech						ISA1_SQL	10.155.173.165								
+BP	Centre France	868	CACF	8	29	ETH0589	EvelyneLauBen	swbppabobj01.zres.ztech						ISA1_SQL	10.155.173.179								
+CF	Centre France (NICE)	868	CACF	12	30	ETH0589	EvelyneLauBen	swbppabobj01.zres.ztech						ISA1_SQL	10.155.173.179								
+PG	Pyrenees Gascogne	869	CRPG	40	31	ETH0589	EvelyneLauBen	swpgpabobj01.zres.ztech						ISA1_SQL	10.155.171.86								
+SM	Sud Mediterranee	871		45	32	ETH0589	EvelyneLauBen	swsmpabobj01.zres.ztech						ISA1_SQL	10.155.173.162								
+AO	Alsace Vosges	872	CRAO	3	33	ETH0589	EvelyneLauBen	swaopabobj01.zres.ztech						ISA1_SQL	10.155.171.82								
+LP	Centre Est	878	CACE	31	34	ETH0589	EvelyneLauBen	swlppabobj01.zres.ztech						ISA1_SQL	10.155.173.180								
+SE	Centre Est (NICE)	878	CACE	44	35	ETH0589	EvelyneLauBen	swlppabobj01.zres.ztech						ISA1_SQL	10.155.173.180								
+AM	Anjou Maine	879		2	36	ETH0589	EvelyneLauBen	swampabobj01.zres.ztech						ISA1_SQL	10.155.171.65								
+AP	des Savoies	881	CADS	4	37	ETH0589	EvelyneLauBen	swappabobj01.zres.ztech						ISA1_SQL	10.155.173.168								
+DS	des Savoies (NICE)	881	CADS	20	38	ETH0589	EvelyneLauBen	swappabobj01.zres.ztech						ISA1_SQL	10.155.173.168								
+IF	Paris Ile de France	882	CADIF	24	39	ETH0589	EvelyneLauBen	swifpabobj02.zres.ztech						ISA1_SQL	10.166.160.18								
+NS	Normandie Seine	883		38	40	ETH0589	EvelyneLauBen	swnspabobj01.zres.ztech						ISA1_SQL	10.155.173.166								
+BI	Brie Picardie	887	CRBI	7	41	ETH0589	EvelyneLauBen	swbipabobj01.zres.ztech						ISA1_SQL	10.155.171.81								
+CP	Provence Cote d azur	891	PCA	16	42	ETH0589	EvelyneLauBen	swcppabobj01.zres.ztech						ISA1_SQL	10.155.173.184								
+PA	Provence Cote d azur (NICE)	891	PCA	39	43	ETH0589	EvelyneLauBen	swcppabobj01.zres.ztech						ISA1_SQL	10.155.173.184								
+TP	Touraine Poitou	894		47	44	ETH0589	EvelyneLauBen	swtppabobj01.zres.ztech						ISA1_SQL	10.155.171.64								
+CO	Centre Ouest	895		15	45	ETH0589	EvelyneLauBen	swcopabobj01.zres.ztech						ISA1_SQL	10.155.171.63								
+GU	Guadeloupe	900	CRGU	23	46	ETH0589	EvelyneLauBen	swgupabobj01.zres.ztech						ISA1_SQL	10.155.171.92								
+MA	Martinique	902	CRMA	32	47	ETH0589	EvelyneLauBen	swmapabobj01.zres.ztech						ISA1_SQL	10.155.171.91								
+RE	Reunion	903		41	48	ETH0589	EvelyneLauBen	swrepabobj01.zres.ztech						ISA1_SQL	10.155.173.163					REp10-bobjsql\REp10	dREp10dtwh01Jj	co_REp10bobju_dbc	adminBO
+				49	49																		
+				50	50																		
+Refv1	Ref v1			51	51	ETH0589	EvelyneLauBen	swzzrabobj11.yres.ytech						ISA1_SQL									
+DevTu	Dev TU			52	52	ETH0589	EvelyneLauBen	zqda0-bobj.yres.ytech						ISA1_SQL									
+				53	53																		
+				54	54																		
+				55	55																		
+				56	56																		
+NEHOM	NEHOM			57	57	ETH0589	EvelyneLauBen	swzxrabobj01.yres.ytech						ISA1_SQL									
+VMOE	VMOE			58	58	ETH0589	EvelyneLauBen	swzqtdedvr01.yres.ytech						ISA1_SQL									
+VMOA	VMOA			59	59	ETH0589	EvelyneLauBen	swzquabobj01.yres.ytech						ISA1_SQL									
+				60	60																		
