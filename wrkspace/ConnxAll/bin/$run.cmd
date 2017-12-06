@@ -2,8 +2,10 @@
 @rem @chcp 850
 @chcp 1252
 
-@set appHome=D:\myTools\Python\wrkspace\ConnxAll\bin
-@set pyBin=d:\myTools\Python\python36\python.exe
+@rem @set appHome=D:\myTools\Python\wrkspace\ConnxAll\bin
+@set appHome=C:\CAT_dskD\myTools\Python\wrkspace\ConnxAll\bin
+@rem @set pyBin=d:\myTools\Python\python36\python.exe
+@set pyBin=C:\CAT_dskD\myTools\Python\python36\python.exe
 
 @rem %pyBin% %appHome%\tkinter-HelloWorld.py
 @rem %pyBin% %appHome%\tkinter-Menu01.py

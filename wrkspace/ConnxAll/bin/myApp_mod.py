@@ -5,6 +5,7 @@
 
 """
 
+import pyodbc
 import sys
 import os
 import argparse
@@ -14,8 +15,6 @@ import re
 import collections
 import datetime
 import decimal
-import pyodbc
-import winreg
 
 from tkinter import *
 from tkinter.messagebox import *
@@ -145,10 +144,9 @@ def runAct(Adh, act) :
     #print("act=", act)
     try : 
         if (Verbose) : 
-            print("INFO : runAct de act=" + act + " et Adh=" + Adh)
-        log("INFO : runAct de act=" + act + " et Adh=" + Adh)
+            print("INFO : runAct de act=" + act + " et Adh=")
+        log("INFO : runAct de act=" + act + " et Adh=")
         globals()[act](dIni, Adh)
-        
     except : 
         if (Verbose) : 
             print("ERREUR : La fonction [" + act + "] est introuvable")
@@ -177,68 +175,6 @@ def onBtnClick(a, p) :
             hidden_val_Adh = hidden_val_act = ""
         
 
-def build_locdata_2tiers(w, h, u) : 
-    """ w = where emplacement du repertoire locdata
-        h = host
-        u = user
-    """
-    filename = h.replace('.', '_') + ".intranet"
-    
-    try :
-        with open(w + os.sep + filename, "wt" ) as oF :
-            oF.write("connection.common.config_name=" + h + "\n") # os.linesep
-            oF.write("connection.common.last_authmode=secEnterprise" + "\n")
-            oF.write("connection.common.last_user=" + u + "\n")
-            oF.write("connection.common.mode=INPROC_CLIENT_MODE" + "\n")
-            oF.write("FIN")
-    except :
-        if (dIni['verbose']) : 
-            print("Defaut creation locdata 2tiers dans rep[" + w + "]")
-        log("Defaut creation locdata 2tiers dans rep[" + w + "]")
-
-
-def build_locdata_3tiers(w, h, u) : 
-    """ w = where emplacement du repertoire locdata
-        h = host
-        u = user
-    """
-    filename = h.replace('.', '_') + "@6400_j2ee.extranet"
-    
-    try :
-        with open(w + "\\" + filename, "wt" ) as oF :
-            oF.write("connection.common.config_name=" + h + ":6400" + "\n")
-            oF.write("connection.common.last_authmode=secEnterprise" + "\n")
-            oF.write("connection.common.last_user=" + u + "\n")
-            oF.write("connection.common.mode=HTTP_MODE" + "\n")
-            oF.write("connection.http.locale=fr" + "\n")
-            oF.write("connection.http.provider=WSTK_HTTP_Tunneling" + "\n")
-            oF.write("connection.http.sso_provider=" + "\n")
-            oF.write("connection.http.url=http://" + h + "//AnalyticalReporting/../AnalyticalReporting/jsp/shared/WSTKBridge.jsp" + "\n")
-            oF.write("connection.http.urlbase=http://" + h + "//AnalyticalReporting/.." + "\n")
-            oF.write("connection.http.web_auth_mode=" + "\n")
-    except :
-        if (dIni['verbose']) : 
-            print("Defaut creation locdata 3tiers dans rep[" + w + "]")
-        log("Defaut creation locdata 3tiers dans rep[" + w + "]")        
-
-        
-def build_dsn(keyVal, clefs) : 
-    # print("keyVal =", keyVal)
-    # print("dico de clefs=\n", clefs)
-    
-    try :
-        ruche = winreg.OpenKey(winreg.HKEY_CURRENT_USER, keyVal, 0, winreg.KEY_WRITE)
-    except : 
-        ruche = winreg.CreateKey(winreg.HKEY_CURRENT_USER, keyVal)
-    
-    ##  Boucler sur le dictionnaire clefs, pour les creer dasn keyVal
-    for k, v in clefs.items() :
-        #print("k =", k, ", v =", v)
-        winreg.SetValueEx(ruche, k, 0, winreg.REG_SZ, v)
-    
-    winreg.CloseKey(ruche)
-    
-        
 def lireConfig() :
     """ Lire la ligne de commande, y trouver le nom du fichier de configuration
     S'il n'est pas fourni, ce sera le nom du script, suffixé par .ini ou .cfg
