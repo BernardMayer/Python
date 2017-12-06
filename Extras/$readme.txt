@@ -7,3 +7,5 @@ pyodbc : https://pypi.python.org/pypi/pyodbc/4.0.11
 
 Teradata : https://pypi.python.org/pypi/giraffez
 	https://developer.teradata.com/tools/reference/teradata-python-module
+	
+pymysql : https://pypi.python.org/pypi/PyMySQL
