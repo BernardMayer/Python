@@ -1,0 +1,16 @@
+name = Jx_S_DTA_WRK_Enrichissement_PROD_PRODTR_025_1, lastModificationTimestamp 2017-03-16T16:02:09.748+0100
+, modifiedByUser = ETA2496, creationTimestamp = 2016-09-14T14:39:13.766+0200, jobType = Parallel, version = 56.0.1002, shortDescription = DTWH - V 1.002 - Enrichissement de la table PROD_PRODTR de la base Work., category = \\DTWH_01\\0010-QAG\\02-ToDelivery\\CDO, dSNameSpace = SLZUDISTEN05.YRES.YTECH:ZUDA0_DTWH_01, dSJobType = 3
+name = TrxGenCode, value = //
+// Generated file to implement the V145S19_Jx_S_DTA_WRK_Enrichissement_PROD_PRODTR_025_1_TR_Source transform operator.
+//
+
+// define our input/output link names
+inputname 0 LN_Done;
+outputname 0 LN_Upsert;
+outputname 1 LN_Reject_1;
+outputname 2 LN_Confirmation;
+outputname 3 LN_Keep;
+outputname 4 LN_Count;
+
+global {
+

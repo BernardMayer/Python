@@ -1,0 +1,7 @@
+Extraire les jobs par commande istool, cela genere un fichier compresse
+Recuperer via bteq les listes des jobs/objets/sqls
+Decompresser le fichier zip isx, cela cree un repertoire avec la hierarchie des fichiers.
+Parser les fichiers isx, pour recuperer les colonnes en sortie, en entree de chacun des jobs
+Parser les sqls pour recuperer les colonnes fournies en entree des jobs
+Comparer par job, les colonnes fournies, les colonnes en entree, les colonnes en sortie
+! Certains SQL sont communs a plusieurs jobs !

@@ -1,0 +1,19 @@
+Jx_S_DTA_WRK_Enrichissement_CLI_CIAL_EMACO_E25_3.dsx
+Jx_S_DTA_WRK_Enrichissement_CPTE_DCVT_CSCA_026_1_save00000000-ZUDA0.dsx
+'azerty
+' uiop
+-q
+_w
+#c
+23
+?jenesaispas
+Jx_1970101000000-EPOCH.txt
+$JEXISTE.txt
+Jx_19991231235959.txt
+Jx_20070707070707.txt
+Jx_20090909090909.txt
+Jx_20101010101010-Vide.txt
+Jx_20111111111111-Ko.txt
+Jx_20121212121212-Ok.txt
+Jx_S_DTA_WRK_Enrichissement_ECD_SITUA_PARTC_ECD_E28_0.dsx
+Jx_S_DTA_WRK_Enrichissement_EVT_A_026_1.dsx

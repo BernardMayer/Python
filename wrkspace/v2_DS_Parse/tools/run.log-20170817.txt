@@ -1,0 +1,19 @@
+
+d:\v2_DSX\tools>set appHome=D:\v2_DSX\Tools\bin 
+Traitement du fichier dsx D:\v2_DSX\dsx\ZUDA0_dscmdexport-20170807.dsx
+
+-------------------- Synthese --------------------
+Nombre de jobs     : 661
+Nombre de IDs      : 661
+Nombre initialize  : 653
+Equilibre init     : 0
+Nombre mainloop    : 653
+Equilibre mainloop : 0
+Nombre ERR_Code    : 1197
+Nombre ERR_Desc    : 1195
+Nbr IDs ss Err     : 445
+Nbr IDs ss ErrCode : 447
+Nbr IDs ss ErrDesc : 445
+Nombre InterVar    : 27277
+Nbr InterVar ss if : 5202
+Nombre de if (     : 19046
