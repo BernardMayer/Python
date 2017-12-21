@@ -1,6 +1,0 @@
-1221594000
-Si le fichier, SUR SA PREMIERE LIGNE,
-ne contient pas un timestamp EPOCH plausible, alors (char(10) et > 1999-01-01 soit TS=915145200)
-le mtime de ce fichier sera utilisé
-915145200 < TS < 2000000000
-1501594000

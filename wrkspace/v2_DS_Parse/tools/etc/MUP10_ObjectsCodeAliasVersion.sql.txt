@@ -1,6 +1,0 @@
-locking row for access
-SELECT object_target_code, object_target_alias_name, flux_version, job_version 
-FROM vmup10meta_tec_ext_0.v_xtr_flux_light 
-WHERE 
-    object_target_code LIKE 'W%'
-;

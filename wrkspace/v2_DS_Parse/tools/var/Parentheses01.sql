@@ -1,1 +1,0 @@
-select colUne, db.colDeux, colTrois colTroisAlias1, colTrois as "colTroisAlias2", sum(colQuatre) colQuatreAlias1, (select min(toto) from table) colCinqAlias1 from table1 inner join table2 on (a=b) inner join (select toto from tableToto)
