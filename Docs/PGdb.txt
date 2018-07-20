@@ -1,0 +1,70 @@
+
+https://www.a2hosting.com/kb/developer-corner/postgresql/connecting-to-postgresql-using-python 
+
+print "Using PyGreSQL…"
+import pgdb
+myConnection = pgdb.connect( host=hostname, user=username, password=password, database=database )
+doQuery( myConnection )
+myConnection.close()
+
+This example creates a series of Connection objects that opens the same database using different PostgreSQL modules. Because both of these modules use the portable SQL database API interface, they are able to use the code in the doQuery() function without any modifications.
+
+When you have a Connection object associated with a database, you can create a Cursor object. The Cursor object enables you to run the execute() method, which in turn enables you to run raw SQL statements (in this case, a SELECT query on a table named employee).
+As you can see, Python's portable SQL database API makes it very easy to switch between PostgreSQL modules in your code. In the sample above, the only code changes necessary to use a different module are to the import and connect statements.
+Code sample using the legacy pg module
+
+The PyGreSQL package also includes a legacy pg module that you can use to connect to PostgreSQL. Although it is easy to use, it does not implement Python's portable SQL database API.
+
+The following code sample demonstrates how to use the pg module to connect to a PostgreSQL database. Replace USERNAME with the PostgreSQL database username, PASSWORD with the database user's password, and DBNAME with the database name:
+
+#!/usr/bin/python
+
+import pg
+
+conn = pg.DB(host="localhost", user="USERNAME", passwd="PASSWORD", dbname="DBNAME")
+
+result = conn.query("SELECT fname, lname FROM employee")
+
+for firstname, lastname in result.getresult() :
+    print firstname, lastname
+
+conn.close()
+
+This example creates a Connection object that opens the PostgreSQL database using the specified parameters. Once you have a Connection object associated with the database, you can query the database directly using raw SQL statements (in this case, a SELECT query on a table named employee). The getresult() method reads the result data returned by the query. Finally, the close() method closes the connection to the database.
+More Information
+
+    For more information about Python's portable SQL database API, please visit https://www.python.org/dev/peps/pep-0249.
+    For more information about the psycopg2 package, please visit https://pypi.python.org/pypi/psycopg2.
+    For more information about the PyGreSQL package, please visit https://pypi.python.org/pypi/PyGreSQL.
+
+https://github.com/KehaoWu/pgdb
+sudo pip install pgdb
+# sudo python3 -m pip install pgdb
+from pgdb import Connection
+connection = Connection(user='postgres', database='main', host='localhost')
+connection.query("select * from main")
+connection.get("select * from main limit 1")
+connection.execute("update main set status = 0")
+connection.executemany("insert into main values %(status)s", [{'status': 1}])
+cursor = connection.cursor()
+connection.commit()
+connection.rollback()
+connection.close()
+
+http://www.pygresql.org/ 
+PyGreSQL is an open-source Python module that interfaces to a PostgreSQL database. It embeds the PostgreSQL query library to allow easy use of the powerful PostgreSQL features from a Python script.
+
+    This software is copyright © 1995, Pascal Andre.
+    Further modifications are copyright © 1997-2008 by D’Arcy J.M. Cain.
+    Further modifications are copyright © 2009-2018 by the PyGreSQL team.
+    For licensing details, see the full Copyright notice.
+
+PostgreSQL is a highly scalable, SQL compliant, open source object-relational database management system. With more than 20 years of development history, it is quickly becoming the de facto database for enterprise level open source solutions. Best of all, PostgreSQL’s source code is available under the most liberal open source license: the BSD license.
+
+Python Python is an interpreted, interactive, object-oriented programming language. It is often compared to Tcl, Perl, Scheme or Java. Python combines remarkable power with very clear syntax. It has modules, classes, exceptions, very high level dynamic data types, and dynamic typing. There are interfaces to many system calls and libraries, as well as to various windowing systems (X11, Motif, Tk, Mac, MFC). New built-in modules are easily written in C or C++. Python is also usable as an extension language for applications that need a programmable interface. The Python implementation is copyrighted but freely usable and distributable, even for commercial use.
+
+PyGreSQL is a Python module that interfaces to a PostgreSQL database. It embeds the PostgreSQL query library to allow easy use of the powerful PostgreSQL features from a Python script or application.
+
+PyGreSQL is developed and tested on a NetBSD system, but it also runs on most other platforms where PostgreSQL and Python is running. It is based on the PyGres95 code written by Pascal Andre (andre@chimay.via.ecp.fr). D’Arcy (darcy@druid.net) renamed it to PyGreSQL starting with version 2.0 and serves as the “BDFL” of PyGreSQL.
+
+The current version PyGreSQL 5.0.5 needs PostgreSQL 9.0 to 9.6 or 10, and Python 2.6, 2.7 or 3.3 to 3.6. If you need to support older PostgreSQL versions or older Python 2.x versions, you can resort to the PyGreSQL 4.x versions that still support them.
