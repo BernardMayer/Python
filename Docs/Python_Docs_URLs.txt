@@ -18,8 +18,9 @@ http://www.chicoree.fr/w/Lire_et_%C3%A9crire_un_fichier_texte_avec_Python
 XL
 http://sametmax.com/lire-et-ecrire-dans-un-fichier-xls/
 http://python-simple.com/python-autres-modules-non-standards/xlrd.php
+https://github.com/python-excel/tutorial    --> (python-excel.pdf)
+https://xlrd.readthedocs.io/en/latest/index.html
 https://www.pythonexcel.com/python-excel-writer.php
 https://openclassrooms.com/forum/sujet/manipuler-feuilles-excel-avec-python
 https://pythonexcels.com/python/2009/10/05/python-excel-mini-cookbook
-
 """
