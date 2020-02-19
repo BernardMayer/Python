@@ -12,3 +12,14 @@ http://web.archive.org/web/20120815130844/http://www.amk.ca/python/writing/DB-AP
 
 http://halfcooked.com/presentations/osdc2006/python_databases.html
 
+http://www.chicoree.fr/w/Lire_et_%C3%A9crire_un_fichier_texte_avec_Python
+
+"""
+XL
+http://sametmax.com/lire-et-ecrire-dans-un-fichier-xls/
+http://python-simple.com/python-autres-modules-non-standards/xlrd.php
+https://www.pythonexcel.com/python-excel-writer.php
+https://openclassrooms.com/forum/sujet/manipuler-feuilles-excel-avec-python
+https://pythonexcels.com/python/2009/10/05/python-excel-mini-cookbook
+
+"""
