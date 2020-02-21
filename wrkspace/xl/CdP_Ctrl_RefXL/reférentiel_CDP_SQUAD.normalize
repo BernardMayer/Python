@@ -1,0 +1,29 @@
+##  CdP Controles Referentiel_XL
+
+#############################################################
+# Description de la correspondance entre
+# la position de la colonne dans le fichier (a partir de 1)
+# et, separees par une TABULATION
+# la variable dans l'outil de controle
+#############################################################
+
+Ne sont prises en compte que les lignes qui debutent par un chiffre
+
+1	cdpObjName
+2	cdpObjNameLib
+
+5	infoFluxName
+6	infoBlocAppli
+7	infoBlocAppliLib
+8	infoFluxAdhCmn
+11	infoTypeAlimData
+13	infoSquadSupport
+
+17	srcOrigineType
+
+25	planPclMef1
+27	planPclMef2
+30	planPclTpt
+
+33	psiRule
+
