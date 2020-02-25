@@ -1,0 +1,9 @@
+[eta2458@slzudisten06 modules]$ python
+Python 2.6.6 (r266:84292, Jun 13 2019, 23:43:26)
+[GCC 4.4.7 20120313 (SuSE 4.4.7-23)] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import csv
+>>> import teradatasql
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ImportError: No module named teradatasql
