@@ -1,0 +1,11 @@
+.logon zuy10-d1tda.yres.ytech/ETA2002,ETA2002
+
+/* .run file=rtc421933_EVT-32133_Prepare.sql
+.run file=rtc421933_EVT-32133_Prepare-A1.sql
+.run file=rtc421933_EVT-32133_Prepare-A2.sql
+.run file=rtc421933_EVT-32133_Prepare-C.sql */
+
+select 1;
+
+.logoff
+.quit 88

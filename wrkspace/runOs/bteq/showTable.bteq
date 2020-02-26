@@ -1,0 +1,6 @@
+.logon base ${user} ${pwd}
+
+.export report file=${where}
+show table ${dbase}.${tbl};
+
+.quit
