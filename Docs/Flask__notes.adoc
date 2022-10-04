@@ -1,0 +1,8 @@
+
+https://pythonprogramminglanguage.com/python-flask-example/
+
+https://flask-sqlalchemy.palletsprojects.com/en/2.x/
+
+https://www.sqlalchemy.org/
+
+https://www.fullstackpython.com/flask-code-examples.html
